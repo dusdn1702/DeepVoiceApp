@@ -1,3 +1,4 @@
+import 'package:deep_voice_application/signUpPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -83,7 +84,10 @@ class _LoginPageState extends State<LoginPage> {
                   color: Colors.deepPurpleAccent,
                   textColor: Colors.white,
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SignUpPage()),
+                    );
                   },
                 ),
               ),
@@ -100,7 +104,10 @@ class _LoginPageState extends State<LoginPage> {
                   color: Colors.white,
                   child: Text('회원가입'),
                   onPressed: () {
-                    Navigator.pop(context);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => SignUpPage()),
+                    );
                   },
                 ),
               ),
