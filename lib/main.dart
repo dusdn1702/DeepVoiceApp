@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
               RaisedButton(
                 child: Text('시작하기'),
                 color: Colors.white,
-                onPressed: (){
+                onPressed: () {
                   Navigator.pushNamed(context, '/login');
                 },
               )
@@ -37,7 +37,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/login': (context) => LoginPage(),
       },
-     // onGenerateRoute: _getRoute,
+      // onGenerateRoute: _getRoute,
     );
   }
 }
