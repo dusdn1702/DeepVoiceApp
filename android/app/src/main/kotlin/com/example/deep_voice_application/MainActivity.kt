@@ -1,4 +1,4 @@
-package com.example.deep_voice_application
+package com.example.deepvoice
 
 import io.flutter.embedding.android.FlutterActivity
 

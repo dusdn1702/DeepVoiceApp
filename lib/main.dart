@@ -1,43 +1,35 @@
-import 'package:deep_voice_application/loginPage.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-void main() {
-  runApp(MyApp());
+import 'package:deepvoice/api/client.dart';
+import 'package:deepvoice/view/page/intro.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  APIClient(url: "http://34.64.125.50:7777");
+
+  runApp(Main());
 }
 
-class MyApp extends StatelessWidget {
+class Main extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+
+    ThemeData theme = ThemeData(
+      primaryColor: const Color(0xff8b80f9),
+      buttonColor: const Color(0xff7165e3),
+      accentColor: const Color(0xff9999ff),
+      errorColor: const Color(0xffff9999),
+    );
+
     return MaterialApp(
-      title: 'Deep Voice',
-      theme: ThemeData(
-        primarySwatch: Colors.deepPurple,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
-      home: Scaffold(
-        backgroundColor: Colors.deepPurpleAccent,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: <Widget>[
-              SizedBox(
-                  height: 200, child: Image.asset('assets/intro_logo.png')),
-              RaisedButton(
-                child: Text('시작하기'),
-                color: Colors.white,
-                onPressed: () {
-                  Navigator.pushNamed(context, '/login');
-                },
-              )
-            ],
-          ),
-        ),
-      ),
-      initialRoute: '/login',
-      routes: {
-        '/login': (context) => LoginPage(),
-      },
-      // onGenerateRoute: _getRoute,
+      theme: theme,
+      debugShowCheckedModeBanner: false,
+      home: IntroPage(),
     );
   }
 }
