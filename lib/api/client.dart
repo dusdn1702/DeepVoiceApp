@@ -3,6 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 
+import 'package:deepvoice/model/voice.dart';
+import 'package:deepvoice/model/bot.dart';
+import 'package:deepvoice/preference.dart';
 import 'package:deepvoice/api/exception.dart';
 import 'package:deepvoice/api/response.dart';
 import 'package:deepvoice/model/user.dart';
@@ -32,13 +35,13 @@ class APIClient {
     }
   }
 
-  Future<LoginResult> login(String id, String password) async {
+  Future<void> login(String id, String password) async {
     Map<String, dynamic> res = await _call("api/v1/user/login", {
       "login_id": id,
       "login_password": password,
     });
-
-    return LoginResult.fromJson(res);
+    LoginResult v = LoginResult.fromJson(res);
+    await Preference(v.sessionID).save();
   }
 
   Future<void> logout(String sessionID) async {
@@ -57,6 +60,102 @@ class APIClient {
       "avatar": avatar,
       "voice": voice,
     });
+  }
+
+  Future<User> getUser() async {
+    String id =  await _getSessionID();
+    Map<String, dynamic> res = await _call("api/v1/user/get", {
+      "session_id": id,
+    });
+    UserDTO dto = UserDTO.fromJson(res);
+
+    return User.fromDTO(dto);
+  }
+
+  Future<void> updateUserNick(String nick) async {
+    String id =  await _getSessionID();
+    await _call("api/v1/user/update/nick", {
+      "session_id": id,
+      "nick": nick,
+    });
+  }
+
+  Future<void> updateUserAvatar(AvatarType avatar) async {
+    String id =  await _getSessionID();
+    await _call("api/v1/user/update/avatar", {
+      "session_id": id,
+      "avatar": avatar.get(),
+    });
+  }
+
+  Future<void> updateUserPassword(String oldPassword, String newPassword) async {
+    String id =  await _getSessionID();
+    await _call("api/v1/user/update/password", {
+      "session_id": id,
+      "old_password": oldPassword,
+      "new_password": newPassword,
+    });
+  }
+
+  Future<void> updateUserPushKey(String pushKey) async {
+    String id =  await _getSessionID();
+    await _call("api/v1/user/update/push", {
+      "session_id": id,
+      "push_key": pushKey,
+    });
+  }
+
+  Future<Voice> getVoice(int voiceID) async {
+    String id =  await _getSessionID();
+    Map<String, dynamic> res = await _call("api/v1/voice/get", {
+      "session_id": id,
+      "voice_id": voiceID,
+    });
+    VoiceDTO dto = VoiceDTO.fromJson(res);
+
+    return Voice.fromDTO(dto);
+  }
+
+  Future<List<Voice>> getVoiceList({String name}) async {
+    String id =  await _getSessionID();
+    List<dynamic> res = await _call("api/v1/voice/list", {
+      "session_id": id,
+      "name": name != null ? name : "",
+    });
+
+    return res.map((dynamic v) {
+      VoiceDTO dto = VoiceDTO.fromJson(v);
+      return Voice.fromDTO(dto);
+    }).toList();
+  }
+
+  Future<void> addVoice(String text) async {
+    String id =  await _getSessionID();
+    await _call("api/v1/voice/add", {
+      "session_id": id,
+      "text": text,
+    });
+  }
+
+  Future<void> updateVoiceName(int voiceID, String name) async {
+    String id =  await _getSessionID();
+    await _call("api/v1/voice/update/name", {
+      "session_id": id,
+      "voice_id": voiceID,
+      "name": name,
+    });
+  }
+
+  Future<String> _getSessionID() async {
+    Preference p =  await loadPreference();
+    if (p == null || p.sessionID.isEmpty) {
+      throw APIException(
+        errorCode: APIStatus.UnknownSession,
+        errorMessage: "세션정보가 존재하지 않습니다.",
+      );
+    }
+
+    return p.sessionID;
   }
 
   Future<dynamic> _call(String method, Map<String, dynamic> params) async {

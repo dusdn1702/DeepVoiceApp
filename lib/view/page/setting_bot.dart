@@ -115,13 +115,13 @@ class _SettingBotPageState extends State<SettingBotPage> {
     return Container(
       child: Column(
         children: [
-          _btnAvatar(AvatarType.fromRabbit().toCircleImage(), this.widget.avatar.isRabbit(), () {
+          _btnAvatar(AvatarType.from(AvatarType.RABBIT).toCircleImage(), this.widget.avatar.isEqualTo(AvatarType.RABBIT), () {
             setState(() {
-              this.widget.avatar.setRabbit();
+              this.widget.avatar.set(AvatarType.RABBIT);
             });
           }),
           SizedBox(height: 8.0),
-          Text(AvatarType.fromRabbit().toString()),
+          Text(AvatarType.from(AvatarType.RABBIT).toString()),
         ],
       ),
     );
@@ -131,13 +131,13 @@ class _SettingBotPageState extends State<SettingBotPage> {
     return Container(
       child: Column(
         children: [
-          _btnAvatar(AvatarType.fromDog().toCircleImage(), this.widget.avatar.isDog(), () {
+          _btnAvatar(AvatarType.from(AvatarType.DOG).toCircleImage(), this.widget.avatar.isEqualTo(AvatarType.DOG), () {
             setState(() {
-              this.widget.avatar.setDog();
+              this.widget.avatar.set(AvatarType.DOG);
             });
           }),
           SizedBox(height: 8.0),
-          Text(AvatarType.fromDog().toString()),
+          Text(AvatarType.from(AvatarType.DOG).toString()),
         ],
       ),
     );
@@ -147,13 +147,13 @@ class _SettingBotPageState extends State<SettingBotPage> {
     return Container(
       child: Column(
         children: [
-          _btnAvatar(AvatarType.fromCat().toCircleImage(), this.widget.avatar.isCat(), () {
+          _btnAvatar(AvatarType.from(AvatarType.CAT).toCircleImage(), this.widget.avatar.isEqualTo(AvatarType.CAT), () {
             setState(() {
-              this.widget.avatar.setCat();
+              this.widget.avatar.set(AvatarType.CAT);
             });
           }),
           SizedBox(height: 8.0),
-          Text(AvatarType.fromCat().toString()),
+          Text(AvatarType.from(AvatarType.CAT).toString()),
         ],
       ),
     );
@@ -163,13 +163,13 @@ class _SettingBotPageState extends State<SettingBotPage> {
     return Container(
       child: Column(
         children: [
-          _btnAvatar(AvatarType.fromBear().toCircleImage(), this.widget.avatar.isBear(), () {
+          _btnAvatar(AvatarType.from(AvatarType.BEAR).toCircleImage(), this.widget.avatar.isEqualTo(AvatarType.BEAR), () {
             setState(() {
-              this.widget.avatar.setBear();
+              this.widget.avatar.set(AvatarType.BEAR);
             });
           }),
           SizedBox(height: 8.0),
-          Text(AvatarType.fromBear().toString()),
+          Text(AvatarType.from(AvatarType.BEAR).toString()),
         ],
       ),
     );
@@ -179,13 +179,13 @@ class _SettingBotPageState extends State<SettingBotPage> {
     return Container(
       child: Column(
         children: [
-          _btnAvatar(AvatarType.fromLion().toCircleImage(), this.widget.avatar.isLion(), () {
+          _btnAvatar(AvatarType.from(AvatarType.LION).toCircleImage(), this.widget.avatar.isEqualTo(AvatarType.LION), () {
             setState(() {
-              this.widget.avatar.setLion();
+              this.widget.avatar.set(AvatarType.LION);
             });
           }),
           SizedBox(height: 8.0),
-          Text(AvatarType.fromLion().toString()),
+          Text(AvatarType.from(AvatarType.LION).toString()),
         ],
       ),
     );
@@ -195,13 +195,13 @@ class _SettingBotPageState extends State<SettingBotPage> {
     return Container(
       child: Column(
         children: [
-          _btnAvatar(AvatarType.fromPanda().toCircleImage(), this.widget.avatar.isPanda(), () {
+          _btnAvatar(AvatarType.from(AvatarType.PANDA).toCircleImage(), this.widget.avatar.isEqualTo(AvatarType.PANDA), () {
             setState(() {
-              this.widget.avatar.setPanda();
+              this.widget.avatar.set(AvatarType.PANDA);
             });
           }),
           SizedBox(height: 8.0),
-          Text(AvatarType.fromPanda().toString()),
+          Text(AvatarType.from(AvatarType.PANDA).toString()),
         ],
       ),
     );
@@ -276,13 +276,13 @@ class _SettingBotPageState extends State<SettingBotPage> {
   }
 
   Widget _btnMan1() {
-    String text = VoiceType.fromMan1().toString();
+    String text = VoiceType.from(VoiceType.MAN1).toString();
     Function onTap = () {
       setState(() {
-        this.widget.voice.setMan1();
+        this.widget.voice.set(VoiceType.MAN1);
       });
     };
-    if (this.widget.voice.isMan1()) {
+    if (this.widget.voice.isEqualTo(VoiceType.MAN1)) {
       return CustomButton(text, CustomButtonType.Default, onTap);
     } else {
       return CustomButton(text, CustomButtonType.Border, onTap);
@@ -290,13 +290,13 @@ class _SettingBotPageState extends State<SettingBotPage> {
   }
 
   Widget _btnMan2() {
-    String text = VoiceType.fromMan2().toString();
+    String text = VoiceType.from(VoiceType.MAN2).toString();
     Function onTap = () {
       setState(() {
-        this.widget.voice.setMan2();
+        this.widget.voice.set(VoiceType.MAN2);
       });
     };
-    if (this.widget.voice.isMan2()) {
+    if (this.widget.voice.isEqualTo(VoiceType.MAN2)) {
       return CustomButton(text, CustomButtonType.Default, onTap);
     } else {
       return CustomButton(text, CustomButtonType.Border, onTap);
@@ -304,13 +304,13 @@ class _SettingBotPageState extends State<SettingBotPage> {
   }
 
   Widget _btnWoman1() {
-    String text = VoiceType.fromWoman1().toString();
+    String text = VoiceType.from(VoiceType.WOMAN1).toString();
     Function onTap = () {
       setState(() {
-        this.widget.voice.setWoman1();
+        this.widget.voice.set(VoiceType.WOMAN1);
       });
     };
-    if (this.widget.voice.isWoman1()) {
+    if (this.widget.voice.isEqualTo(VoiceType.WOMAN1)) {
       return CustomButton(text, CustomButtonType.Default, onTap);
     } else {
       return CustomButton(text, CustomButtonType.Border, onTap);
@@ -318,13 +318,13 @@ class _SettingBotPageState extends State<SettingBotPage> {
   }
 
   Widget _btnWoman2() {
-    String text = VoiceType.fromWoman2().toString();
+    String text = VoiceType.from(VoiceType.WOMAN2).toString();
     Function onTap = () {
       setState(() {
-        this.widget.voice.setWoman2();
+        this.widget.voice.set(VoiceType.WOMAN2);
       });
     };
-    if (this.widget.voice.isWoman2()) {
+    if (this.widget.voice.isEqualTo(VoiceType.WOMAN2)) {
       return CustomButton(text, CustomButtonType.Default, onTap);
     } else {
       return CustomButton(text, CustomButtonType.Border, onTap);

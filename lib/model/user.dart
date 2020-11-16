@@ -1,11 +1,38 @@
 import 'package:deepvoice/model/bot.dart';
 
 import 'package:json_annotation/json_annotation.dart';
+import 'package:intl/intl.dart';
 
 part 'user.g.dart';
 
-@JsonSerializable()
 class User {
+  final int id;
+  final String loginID;
+  final String nick;
+  final Gender gender;
+  final DateTime birth;
+  final Push push;
+  final Bot bot;
+  final DateTime timestamp;
+
+  User(this.id, this.loginID, this.nick, this.gender, this.birth, this.push, this.bot, this.timestamp);
+
+  factory User.fromDTO(UserDTO dto) {
+    return User(
+      dto.id,
+      dto.loginID,
+      dto.nick,
+      Gender.from(dto.gender),
+      DateFormat("yyyy-MM-dd").parse(dto.birth),
+      dto.push,
+      Bot.fromDTO(dto.bot),
+      DateTime.fromMillisecondsSinceEpoch(dto.timestamp * 1000),
+    );
+  }
+}
+
+@JsonSerializable()
+class UserDTO {
   final int id;
   @JsonKey(name: "login_id")
   final String loginID;
@@ -13,13 +40,13 @@ class User {
   final String gender;
   final String birth;
   final Push push;
-  final Bot bot;
+  final BotDTO bot;
   final int timestamp;
 
-  User(this.id, this.loginID, this.nick, this.gender, this.birth, this.push, this.bot, this.timestamp);
+  UserDTO(this.id, this.loginID, this.nick, this.gender, this.birth, this.push, this.bot, this.timestamp);
 
-  factory User.fromJson(Map<String, dynamic> json) => _$UserFromJson(json);
-  Map<String, dynamic> toJson() => _$UserToJson(this);
+  factory UserDTO.fromJson(Map<String, dynamic> json) => _$UserDTOFromJson(json);
+  Map<String, dynamic> toJson() => _$UserDTOToJson(this);
 }
 
 @JsonSerializable()
@@ -37,7 +64,7 @@ class Push {
 class LoginResult {
   @JsonKey(name: "session_id")
   final String sessionID;
-  final User user;
+  final UserDTO user;
 
   LoginResult(this.sessionID, this.user);
 
@@ -46,47 +73,48 @@ class LoginResult {
 }
 
 class Gender {
-  final String _MAN    = "M";
-  final String _WOMAN  = "W";
+  static final String MAN    = "M";
+  static final String WOMAN  = "W";
 
   String _value;
 
-  Gender.fromMan() {
-    this._value = _MAN;
-  }
-
-  Gender.fromWoman() {
-    this._value = _WOMAN;
+  Gender.from(String v) {
+    if (_validate(v) == false) {
+      throw Exception("invalid gender");
+    }
+    this._value = v;
   }
 
   String get() {
     return this._value;
   }
 
-  void setMan() {
-    this._value = _MAN;
+  void set(String v) {
+    if (_validate(v) == false) {
+      throw Exception("invalid gender");
+    }
+    this._value = v;
   }
 
-  void setWoman() {
-    this._value = _WOMAN;
+  bool isEqualTo(String v) {
+    if (_validate(v) == false) {
+      throw Exception("invalid gender");
+    }
+    return this._value == v;
   }
 
-  bool isMan() {
-    return this._value == _MAN;
-  }
-
-  bool isWoman() {
-    return this._value == _WOMAN;
+  bool _validate(String v) {
+    return v == MAN || v == WOMAN;
   }
 
   String toString() {
-    if (isMan()) {
+    if (isEqualTo(MAN)) {
       return "남성";
     }
-    if (isWoman()) {
+    if (isEqualTo(WOMAN)) {
       return "여성";
     }
 
-    return "";
+    throw Exception("invalid gender");
   }
 }

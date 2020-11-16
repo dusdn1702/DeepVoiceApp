@@ -1,7 +1,5 @@
 import 'dart:convert';
 
-import 'package:deepvoice/model/user.dart';
-
 import 'package:json_annotation/json_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -13,9 +11,8 @@ final String _PREFERENCE_NAME = "DEEPVOICE_PREFERENCE";
 class Preference {
   @JsonKey(name: "session_id")
   String sessionID;
-  User user;
 
-  Preference(this.sessionID, this.user);
+  Preference(this.sessionID);
 
   Future<void> save() async {
     SharedPreferences v = await SharedPreferences.getInstance();
@@ -23,7 +20,7 @@ class Preference {
   }
 
   bool isLogin() {
-    return sessionID.isNotEmpty && user != null;
+    return this.sessionID.isNotEmpty;
   }
 
   factory Preference.fromJson(Map<String, dynamic> json) => _$PreferenceFromJson(json);

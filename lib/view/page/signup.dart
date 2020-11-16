@@ -22,9 +22,9 @@ class _SignUpPageState extends State<SignUpPage> {
   final _passwordCheckController = TextEditingController();
   final _nickController = TextEditingController();
   final _birthController = TextEditingController();
-  Gender _gender = Gender.fromMan();
-  AvatarType _avatar = AvatarType.fromRabbit();
-  VoiceType _voice = VoiceType.fromMan1();
+  Gender _gender = Gender.from(Gender.MAN);
+  AvatarType _avatar = AvatarType.from(AvatarType.RABBIT);
+  VoiceType _voice = VoiceType.from(VoiceType.MAN1);
 
   @override
   Widget build(BuildContext context) {
@@ -88,13 +88,13 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Widget _btnMan() {
-    String text = Gender.fromMan().toString();
+    String text = Gender.from(Gender.MAN).toString();
     Function onTap = () {
       setState(() {
-        this._gender.setMan();
+        this._gender.set(Gender.MAN);
       });
     };
-    if (this._gender.isMan()) {
+    if (this._gender.isEqualTo(Gender.MAN)) {
       return CustomButton(text, CustomButtonType.Default, onTap);
     } else {
       return CustomButton(text, CustomButtonType.Border, onTap);
@@ -102,13 +102,13 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Widget _btnWoman() {
-    String text = Gender.fromWoman().toString();
+    String text = Gender.from(Gender.WOMAN).toString();
     Function onTap = () {
       setState(() {
-        this._gender.setWoman();
+        this._gender.set(Gender.WOMAN);
       });
     };
-    if (this._gender.isWoman()) {
+    if (this._gender.isEqualTo(Gender.WOMAN)) {
       return CustomButton(text, CustomButtonType.Default, onTap);
     } else {
       return CustomButton(text, CustomButtonType.Border, onTap);

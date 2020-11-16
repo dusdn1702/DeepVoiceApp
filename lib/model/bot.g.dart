@@ -6,15 +6,15 @@ part of 'bot.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Bot _$BotFromJson(Map<String, dynamic> json) {
-  return Bot(
+BotDTO _$BotDTOFromJson(Map<String, dynamic> json) {
+  return BotDTO(
     json['id'] as int,
     json['avatar'] as String,
     json['voice'] as String,
   );
 }
 
-Map<String, dynamic> _$BotToJson(Bot instance) => <String, dynamic>{
+Map<String, dynamic> _$BotDTOToJson(BotDTO instance) => <String, dynamic>{
       'id': instance.id,
       'avatar': instance.avatar,
       'voice': instance.voice,

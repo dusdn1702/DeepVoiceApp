@@ -1,3 +1,5 @@
+import 'package:deepvoice/model/user.dart';
+import 'package:deepvoice/model/voice.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -8,8 +10,6 @@ import 'package:deepvoice/view/widget/textfield.dart';
 import 'package:deepvoice/view/widget/button.dart';
 import 'package:deepvoice/view/page/signup.dart';
 import 'package:deepvoice/api/client.dart';
-import 'package:deepvoice/model/user.dart';
-import 'package:deepvoice/preference.dart';
 
 class LoginPage extends StatelessWidget {
   final _usernameController = TextEditingController();
@@ -92,8 +92,7 @@ class LoginPage extends StatelessWidget {
   Future<bool> _login(BuildContext context, String id, String password) async {
     try {
       APIClient client = APIClient();
-      LoginResult res = await client.login(id, password);
-      await Preference(res.sessionID, res.user).save();
+      await client.login(id, password);
       return true;
     } catch (e) {
       if (e is APIException) {
@@ -106,6 +105,7 @@ class LoginPage extends StatelessWidget {
         }
       }
       alert(context, "알 수 없는 에러가 발생했습니다.", "확인");
+      print(e);
       return false;
     }
   }

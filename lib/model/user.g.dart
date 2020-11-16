@@ -6,8 +6,8 @@ part of 'user.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-User _$UserFromJson(Map<String, dynamic> json) {
-  return User(
+UserDTO _$UserDTOFromJson(Map<String, dynamic> json) {
+  return UserDTO(
     json['id'] as int,
     json['login_id'] as String,
     json['nick'] as String,
@@ -18,12 +18,12 @@ User _$UserFromJson(Map<String, dynamic> json) {
         : Push.fromJson(json['push'] as Map<String, dynamic>),
     json['bot'] == null
         ? null
-        : Bot.fromJson(json['bot'] as Map<String, dynamic>),
+        : BotDTO.fromJson(json['bot'] as Map<String, dynamic>),
     json['timestamp'] as int,
   );
 }
 
-Map<String, dynamic> _$UserToJson(User instance) => <String, dynamic>{
+Map<String, dynamic> _$UserDTOToJson(UserDTO instance) => <String, dynamic>{
       'id': instance.id,
       'login_id': instance.loginID,
       'nick': instance.nick,
@@ -51,7 +51,7 @@ LoginResult _$LoginResultFromJson(Map<String, dynamic> json) {
     json['session_id'] as String,
     json['user'] == null
         ? null
-        : User.fromJson(json['user'] as Map<String, dynamic>),
+        : UserDTO.fromJson(json['user'] as Map<String, dynamic>),
   );
 }
 
