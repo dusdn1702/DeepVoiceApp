@@ -7,8 +7,7 @@ import 'package:deepvoice/view/page/intro.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // APIClient(url: "http://34.64.125.50:7777");
-  APIClient(url: "http://172.30.1.10:7777");
+  APIClient(url: "http://34.64.125.50:7777");
 
   runApp(Main());
 }
