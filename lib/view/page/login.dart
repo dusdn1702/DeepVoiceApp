@@ -1,5 +1,6 @@
 import 'package:deepvoice/model/user.dart';
 import 'package:deepvoice/model/voice.dart';
+import 'package:deepvoice/view/page/mainPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -84,7 +85,11 @@ class LoginPage extends StatelessWidget {
       bool ok = await _login(context, this._usernameController.text, this._passwordController.text);
       if (ok) {
         FocusScope.of(context).unfocus();
-        alert(context, "로그인에 성공했습니다.\n메인 서비스 준비중입니다.", "확인");
+        alert(context, "로그인에 성공했습니다.", "확인", onTap: (){
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (context) => MainPage()),
+          );
+        });
       }
     };
   }

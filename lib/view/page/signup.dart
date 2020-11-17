@@ -161,7 +161,7 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  void _onTapSettingBot() {
+  void _onTapSettingBot() async{
     Navigator.push(
       context, MaterialPageRoute(builder: (context) => SettingBotPage(_avatar, _voice, (AvatarType a, VoiceType v) {
         setState(() {
