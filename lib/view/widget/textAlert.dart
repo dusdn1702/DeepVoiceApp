@@ -29,12 +29,16 @@ class CustomTextAlert extends StatelessWidget {
             ),
             child: Column(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.close, size: 10),
-                  onPressed: () => {Navigator.pop(context)},
-                  padding: EdgeInsets.only(left: 197, top: 19, right: 15, bottom: 8),
+                Align(
+                  alignment: Alignment.topRight,
+                  child:IconButton(
+                    icon: const Icon(Icons.close, size: 10),
+                    onPressed: () => {Navigator.pop(context)},
+                    padding: EdgeInsets.only(top: 19, bottom: 8),
+                  ),
                 ),
-                Text(this.alertTitle, textAlign: TextAlign.center),
+                SizedBox(height: 7.8),
+                Text(this.alertTitle, textAlign: TextAlign.center, style: TextStyle(fontSize: 13.8),),
                 SizedBox(height: 16.5),
                 Container(
                   width: double.infinity,
@@ -42,6 +46,7 @@ class CustomTextAlert extends StatelessWidget {
                 ),
                 SizedBox(height: 17.3),
                 Container(
+                  width: double.infinity,
                   child: CustomButton(this.btnText, CustomButtonType.Default, () {
                     Navigator.of(context).pop();
                     if (this.onTap != null) {

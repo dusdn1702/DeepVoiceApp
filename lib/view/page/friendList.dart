@@ -26,10 +26,9 @@ class _FriendListState extends State<FriendListPage> {
             children: [
               _choosingBar(context),
               SizedBox(height: 13.0),
-              //Search(),
+              Search(),
               SizedBox(height: 10.0),
               _selectList(context, nowButton),
-              _addFriendButton(context),
             ],
           ),
         ),
@@ -37,6 +36,7 @@ class _FriendListState extends State<FriendListPage> {
           FocusScope.of(context).unfocus();
         },
       ),
+      floatingActionButton: _addFriendButton(context),
     );
   }
 
@@ -64,42 +64,17 @@ class _FriendListState extends State<FriendListPage> {
         color: Theme
             .of(context)
             .primaryColor,
-
         child: Row(
           children: [
-            Expanded(child: RaisedButton(
-              child: Text("친구목록",
-              style: TextStyle(color: Colors.white, fontSize: 9.5),
+            Expanded(
+              child: _selectOneColumn("친구목록"),
             ),
-              onPressed: () {
-                setState(() {
-                  nowButton = "친구목록";
-                  _friendList(context);
-                });
-            },
-            ),),
-            Expanded(child: RaisedButton(
-              child: Text("요청받음",
-                style: TextStyle(color: Colors.white, fontSize: 9.5),
-              ),
-              onPressed: () {
-                setState(() {
-                  nowButton = "요청받음";
-                  _receiveFriendList();
-                });
-              },
-            ),),
-            Expanded(child: RaisedButton(
-              child: Text("요청보냄",
-                style: TextStyle(color: Colors.white, fontSize: 9.5),
-              ),
-              onPressed: () {
-                setState(() {
-                  nowButton = "요청보냄";
-                  _sendFriendList(context);
-                });
-              },
-            ),),
+            Expanded(
+              child: _selectOneColumn("요청받음"),
+            ),
+            Expanded(
+              child:_selectOneColumn("요청보냄"),
+            ),
           ],
         )
     );
@@ -147,6 +122,30 @@ class _FriendListState extends State<FriendListPage> {
     ));
   }
 
+  Widget _selectOneColumn(String oneBox){
+    return Column(
+      children: [
+        Container(
+          height: 38.5,
+          child: FlatButton(
+            child: Text(oneBox,
+              style: TextStyle(color: Colors.white, fontSize: 9.5),
+            ),
+            onPressed: () {
+              setState(() {
+                nowButton = oneBox;
+                _receiveFriendList();
+              });
+            },
+          ),),
+        if(nowButton==oneBox)
+          Container(
+            width: 40,
+            height: 3,
+            color: Colors.white,
+          )
+      ],);
+  }
   Widget _receiveFriendList() {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 24.0),

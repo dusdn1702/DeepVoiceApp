@@ -67,12 +67,15 @@ class SideBar extends StatelessWidget {
 
   Widget _closingIcon(BuildContext context) {
     return Container(
-      padding: EdgeInsets.only(left: 210, top: 0),
-      child: IconButton(
-        icon: Icon(Icons.close),
-        onPressed: () => {Navigator.pop(context)},
-        iconSize: 12.0,
-        color: Colors.black,
+      child:
+      Align(
+        alignment: Alignment.topRight,
+        child:IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () => {Navigator.pop(context)},
+          iconSize: 12.0,
+          color: Colors.black,
+        ),
       ),
     );
   }

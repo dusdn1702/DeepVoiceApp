@@ -43,36 +43,42 @@ class _CustomAudioPlayerState extends State<CustomAudioPlayer> {
             ),
             child: Column(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.close, size: 10),
-                  onPressed: () => {Navigator.pop(context)},
-                  padding: EdgeInsets.only(
-                      left: 197, top: 19, right: 15, bottom: 8),
+                Align(
+                  alignment: Alignment.topRight,
+                  child: IconButton(
+                    padding: EdgeInsets.only(top: 18.3),
+                    icon: const Icon(Icons.close, size: 10),
+                    onPressed: () => {Navigator.pop(context)},
+                  ),
                 ),
-                Container(padding: EdgeInsets.only(left: 0),
-                  child: Text(this.voiceTitle),),
+                Container(
+                  padding: EdgeInsets.only(left: 0),
+                  child: Text("this.voiceTitle"),
+                ), //여기가 문제
                 SizedBox(height: 13),
                 musicSlider(),
                 Container(
-                    width: 182.5,
-                    padding: EdgeInsets.only(top: 4.8),
+                    padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 4.8),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          "${position.inMinutes}:${position.inSeconds.remainder(
-                              60)}",
-                          style: TextStyle(
-                            fontSize: 5.3,
-                          ),),
                         Container(
-                          padding: EdgeInsets.only(left: 137),
+                          width: 23.8,
                           child: Text(
-                            "${position.inMinutes}:${position.inSeconds
-                                .remainder(60)}",
+                            "${position.inMinutes}:${position.inSeconds.remainder(60)}",
                             style: TextStyle(
-                              fontSize: 5.3,
+                              fontSize: 11,
+                            ),),),
+                        Container(
+                          width: 248,
+                        ),
+                        Container(
+                          width: 23.8,
+                          child: Text(
+                            "${musicLength.inMinutes}:${musicLength.inSeconds.remainder(60)}",
+                            style: TextStyle(
+                              fontSize: 11,
                             ),
                           ),
                         ),
@@ -81,7 +87,7 @@ class _CustomAudioPlayerState extends State<CustomAudioPlayer> {
                 ),
                 //여기에 오디오 플레이어
                 SizedBox(height: 19.3),
-                //_playButton(1),
+                _playButton("example"),
                 SizedBox(height: 19.5),
               ],
             ),
@@ -110,7 +116,7 @@ class _CustomAudioPlayerState extends State<CustomAudioPlayer> {
   void initState() {
     super.initState();
     _player = AudioPlayer();
-    cache = AudioCache(fixedPlayer: _player);
+    cache = AudioCache(fixedPlayer: _player, prefix: 'assets/audio/');
 
     _player.durationHandler = (d) {
       setState(() {
@@ -124,30 +130,42 @@ class _CustomAudioPlayerState extends State<CustomAudioPlayer> {
     };
   }
 
-  Widget _playButton(int voiceID) {
+  Widget _playButton(String voiceID) {
     return
-      RaisedButton(
-        onPressed: () {
+      FlatButton(
+        onPressed: () async{
           if (!playing) {
-            cache.play('assets/$voiceID.mp3');
+            cache.play('$voiceID.mp3');
             setState(() {
               playing = true;
-              child:
-              Image.asset('assets/popup_pause.png');
             });
           }
           else {
+            _player.pause();
             setState(() {
               playing = false;
-              child:
-              Image.asset('assets/popup_play.png');
             });
           }
-          //여기에 버튼 바꾸기
         },
+        child:
+          _playButtonIcon(),
       );
   }
 
+  Widget _playButtonIcon(){
+    if(playing) return Container(
+      color: Colors.white,
+      width: 35.8,
+      height: 35.8,
+      child: Image.asset('assets/popup_pause.png'),
+    );
+    else return Container(
+      color: Colors.white,
+      width: 35.8,
+      height: 35.8,
+      child: Image.asset('assets/popup_play.png'),
+    );
+  }
 //  void playVoice(int voiceID){
 //    final AudioCache player = AudioCache();
 //    player.play('assets/$voiceID.mp3');
