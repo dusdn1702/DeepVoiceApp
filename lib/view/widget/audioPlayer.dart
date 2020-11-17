@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:deepvoice/view/widget/button.dart';
-import 'package:json_serializable/type_helper.dart';
 
 class CustomAudioPlayer extends StatefulWidget {
   final String voiceTitle;
