@@ -1,18 +1,25 @@
+import 'package:deepvoice/api/client.dart';
+import 'package:deepvoice/api/exception.dart';
+import 'package:deepvoice/api/response.dart';
 import 'package:deepvoice/model/bot.dart';
 import 'package:deepvoice/model/user.dart';
+import 'package:deepvoice/preference.dart';
 import 'package:deepvoice/view/page/album.dart';
 import 'package:deepvoice/view/page/friendList.dart';
+import 'package:deepvoice/view/widget/alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class SideBar extends StatelessWidget {
-  final String userNick;
-  final String userBirth;
-  final Gender _gender;
-  final AvatarType _avatar;
+class SideBar extends StatefulWidget {
+  final Future<User> _user;
 
-  SideBar(this.userNick, this._gender, this.userBirth, this._avatar);
+  SideBar(this._user);
 
+  @override
+  _SideBarState createState() => _SideBarState();
+}
+
+class _SideBarState extends State<SideBar>{
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -54,15 +61,36 @@ class SideBar extends StatelessWidget {
               },
               ),
               SizedBox(height: 155),
-              _itemOfListTile(context, 'assets/sidemenu_logout.png', '로그아웃', () async{
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => null),);
-              },
+              _itemOfListTile(context, 'assets/sidemenu_logout.png', '로그아웃', _onTapLogout(context)
               ),
             ],
           ),
         ),
       ),
     );
+  }
+
+  Future<String> _findUser() async{
+    Preference p = await loadPreference();
+    return p.sessionID;
+  }
+
+  String userSessionId = "";
+  _getSessionId() async{
+    _findUser().then((String result){
+      setState((){
+        userSessionId = result;
+      });
+    });
+  }
+
+  User realUser;
+  _getUser() async{
+    this.widget._user.then((User result){
+      setState((){
+        realUser = result;
+      });
+    });
   }
 
   Widget _closingIcon(BuildContext context) {
@@ -81,26 +109,30 @@ class SideBar extends StatelessWidget {
   }
 
   Widget _userBot() {
+    _getUser();
     return Container(
       width: 75,
       height: 75,
-      child: this._avatar.toCircleImage(),
+      child: realUser.bot.avatar.toCircleImage(),
     );
   }
 
   Widget _userName() {
-    return Text(this.userNick,
+    _getUser();
+    return Text(
+      realUser.nick,
         style: TextStyle(color: Colors.black, fontSize: 14),
         textAlign: TextAlign.center);
   }
 
   Widget _userInfo() {
+    _getUser();
     return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            this.userBirth,
+            (DateTime.now().year - realUser.birth.year).toString(),
             style: TextStyle(color: Colors.black, fontSize: 11.5),
             textAlign: TextAlign.center,
           ),
@@ -110,7 +142,7 @@ class SideBar extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           Text(
-            this._gender.toString(),
+            realUser.gender.toString(),
             style: TextStyle(color: Colors.black, fontSize: 11.5),
             textAlign: TextAlign.center,
           ),
@@ -131,4 +163,36 @@ class SideBar extends StatelessWidget {
       onTap: onTap,
     );
   }
+
+  Function _onTapLogout(BuildContext context){
+    return () async{
+      _getSessionId();
+      bool ok = await _logout(context);
+      if (ok) {
+        FocusScope.of(context).unfocus();
+        alert(context, "로그인에 성공했습니다.", "확인", onTap: () {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        });
+      }
+    };
+  }
+
+  Future<bool> _logout(BuildContext context) async{
+    try {
+      APIClient client = APIClient();
+      await client.logout(userSessionId);
+      return true;
+    } catch (e) {
+      if (e is APIException) {
+        if (e.errorCode == APIStatus.InvalidParameter) {
+          alert(context, "올바른 정보를 입력해주세요.", "확인");
+          return false;
+        }
+      }
+      alert(context, "알 수 없는 에러가 발생했습니다.", "확인");
+      print(e);
+      return false;
+    }
+  }
+
 }
