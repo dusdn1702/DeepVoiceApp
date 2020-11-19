@@ -70,25 +70,25 @@ class _SideBarState extends State<SideBar>{
     );
   }
 
-  Future<String> _findUser() async{
+  Future<String> _findSessionID() async{
     Preference p = await loadPreference();
     return p.sessionID;
   }
 
   String userSessionId = "";
   _getSessionId() async{
-    _findUser().then((String result){
+    _findSessionID().then((String result){
       setState((){
         userSessionId = result;
       });
     });
   }
 
-  User realUser;
+  User currentUser;
   _getUser() async{
     this.widget._user.then((User result){
       setState((){
-        realUser = result;
+        currentUser = result;
       });
     });
   }
@@ -113,14 +113,14 @@ class _SideBarState extends State<SideBar>{
     return Container(
       width: 75,
       height: 75,
-      child: realUser.bot.avatar.toCircleImage(),
+      child: currentUser.bot.avatar.toCircleImage(),
     );
   }
 
   Widget _userName() {
     _getUser();
     return Text(
-      realUser.nick,
+      currentUser.nick,
         style: TextStyle(color: Colors.black, fontSize: 14),
         textAlign: TextAlign.center);
   }
@@ -132,7 +132,7 @@ class _SideBarState extends State<SideBar>{
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            (DateTime.now().year - realUser.birth.year).toString(),
+            (DateTime.now().year - currentUser.birth.year).toString(),
             style: TextStyle(color: Colors.black, fontSize: 11.5),
             textAlign: TextAlign.center,
           ),
@@ -142,7 +142,7 @@ class _SideBarState extends State<SideBar>{
             textAlign: TextAlign.center,
           ),
           Text(
-            realUser.gender.toString(),
+            currentUser.gender.toString(),
             style: TextStyle(color: Colors.black, fontSize: 11.5),
             textAlign: TextAlign.center,
           ),
@@ -186,6 +186,11 @@ class _SideBarState extends State<SideBar>{
       if (e is APIException) {
         if (e.errorCode == APIStatus.InvalidParameter) {
           alert(context, "올바른 정보를 입력해주세요.", "확인");
+          return false;
+        } else if (e.errorCode == APIStatus.UnknownSession) {
+          alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          });
           return false;
         }
       }

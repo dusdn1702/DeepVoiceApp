@@ -1,14 +1,16 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:audioplayers/audio_cache.dart';
+import 'package:deepvoice/model/voice.dart';
+import 'package:deepvoice/view/page/album.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:deepvoice/view/widget/button.dart';
 
 class CustomAudioPlayer extends StatefulWidget {
-  final String voiceTitle;
+  final Voice _voice;
 
-  CustomAudioPlayer(this.voiceTitle);
+  CustomAudioPlayer(this._voice);
 
   @override
   _CustomAudioPlayerState createState() => _CustomAudioPlayerState();
@@ -16,7 +18,6 @@ class CustomAudioPlayer extends StatefulWidget {
 
 class _CustomAudioPlayerState extends State<CustomAudioPlayer> {
   bool playing = false;
-  String voiceTitle;
 
   AudioPlayer _player;
   AudioCache cache;
@@ -48,13 +49,15 @@ class _CustomAudioPlayerState extends State<CustomAudioPlayer> {
                   child: IconButton(
                     padding: EdgeInsets.only(top: 18.3),
                     icon: const Icon(Icons.close, size: 10),
-                    onPressed: () => {Navigator.pop(context)},
+                    onPressed: () => {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => AlbumPage()))
+                  },
                   ),
                 ),
                 Container(
                   padding: EdgeInsets.only(left: 0),
-                  child: Text("this.voiceTitle"),
-                ), //여기가 문제
+                  child: Text(this.widget._voice.name),
+                ),
                 SizedBox(height: 13),
                 musicSlider(),
                 Container(
@@ -87,7 +90,7 @@ class _CustomAudioPlayerState extends State<CustomAudioPlayer> {
                 ),
                 //여기에 오디오 플레이어
                 SizedBox(height: 19.3),
-                _playButton("example"),
+                _playButton(this.widget._voice.id),
                 SizedBox(height: 19.5),
               ],
             ),
@@ -130,7 +133,7 @@ class _CustomAudioPlayerState extends State<CustomAudioPlayer> {
     };
   }
 
-  Widget _playButton(String voiceID) {
+  Widget _playButton(int voiceID) {
     return
       FlatButton(
         onPressed: () async{
@@ -166,17 +169,13 @@ class _CustomAudioPlayerState extends State<CustomAudioPlayer> {
       child: Image.asset('assets/popup_play.png'),
     );
   }
-//  void playVoice(int voiceID){
-//    final AudioCache player = AudioCache();
-//    player.play('assets/$voiceID.mp3');
-//  }
 }
 
-void audioPlayer(BuildContext context, String voiceTitle) {
+void audioPlayer(BuildContext context, Voice voice) {
   showDialog(
       context: context,
       builder: (BuildContext context) {
-        return CustomAudioPlayer(voiceTitle);
+        return CustomAudioPlayer(voice);
       }
   );
 }

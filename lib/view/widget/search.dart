@@ -1,4 +1,9 @@
+import 'package:deepvoice/api/client.dart';
+import 'package:deepvoice/api/exception.dart';
+import 'package:deepvoice/api/response.dart';
 import 'package:deepvoice/model/user.dart';
+import 'package:deepvoice/model/voice.dart';
+import 'package:deepvoice/view/widget/alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -37,7 +42,7 @@ class _SearchState extends State<Search> {
                           fontSize: 11,
                         ),
                         autofocus: true,
-                        //controller: _searchingText,
+                        controller: _searchingText,
                         decoration: InputDecoration(
                             filled: true,
                             fillColor: Color(0xfff3f5fa),
@@ -84,49 +89,4 @@ class _SearchState extends State<Search> {
         )
     );
   }
-
-  Widget _buildBody(BuildContext context){
-    return StreamBuilder(
-      //stream: User,
-      builder: (context, found){
-        if (!found.hasData) return /*allUsers()*/null;
-        return null;
-        //_buildList(context, found.data.documnets);
-      },
-    );
-  }
-//
-// Widget _buildList(BuildContext context, List<User> found){
-//   List<User> searchResults = [];
-//   for (User result in found){
-//     if (result.data.toString().contains(_searchText)){
-//       searchResults.add(result);
-//     }
-//   }
-//   return Expanded(
-//     child: GridView.count(
-//       crossAxisCount: 3,
-//       childAspectRatio: 1 / 1.5,
-//       padding: EdgeInsets.all(3),
-//       children: searchResults
-//         .map((data) => _buildListItem(context, data))
-//         .toList()
-//     ),
-//   );
-// }
-//
-// Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-//   final movie = Movie.fromSnapshot(data);
-//   return InkWell(
-//     child: Image.network(movie.poster),
-//     onTap: () {
-//       Navigator.of(context).push(MaterialPageRoute<Null>(
-//           fullscreenDialog: true,
-//           builder: (BuildContext context) {
-//             return DetailScreen(movie: movie);
-//           }));
-//     },
-//   );
-// }
-//
 }

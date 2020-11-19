@@ -1,3 +1,8 @@
+import 'package:deepvoice/api/client.dart';
+import 'package:deepvoice/api/exception.dart';
+import 'package:deepvoice/api/response.dart';
+import 'package:deepvoice/model/voice.dart';
+import 'package:deepvoice/view/page/album.dart';
 import 'package:deepvoice/view/widget/alert.dart';
 import 'package:deepvoice/view/widget/audioPlayer.dart';
 import 'package:deepvoice/view/widget/textAlert.dart';
@@ -7,10 +12,17 @@ import 'package:flutter/material.dart';
 
 import 'package:deepvoice/view/widget/button.dart';
 
-class CustomListAlert extends StatelessWidget {
+class CustomListAlert extends StatefulWidget {
   final TextEditingController _voiceTitleController;
+  final Voice _voice;
 
-  CustomListAlert(this._voiceTitleController);
+  CustomListAlert(this._voiceTitleController, this._voice);
+
+  @override
+  _CustomListAlertState createState() => _CustomListAlertState();
+}
+
+class _CustomListAlertState extends State<CustomListAlert> {
 
   @override
   Widget build(BuildContext context) {
@@ -31,21 +43,30 @@ class CustomListAlert extends StatelessWidget {
           ),
           child: Column(
             children: [
-              _oneOfList(context, (){
-                audioPlayer(context, "1");
+              _oneOfList(context, () {
+                audioPlayer(context, _getVoice(this.widget._voice.id)); //voiceID
               }, "재생하기"),
               Container(
                   color: Colors.black,
                   height: 0.3
               ),
-              _oneOfList(context, (){
-                textAlert(context, "파일이름변경", "현재파일명노출란", "변경하기", this._voiceTitleController);
+              _oneOfList(context, () {
+                textAlert(context, "파일이름변경", this.widget._voice.name, "변경하기",
+                    this.widget._voiceTitleController, onTap: () async {
+                      bool ok = await _updateVoiceTitle(context, this.widget._voice.id, this.widget._voiceTitleController.text);  //voiceID
+                      if (ok) {
+                        FocusScope.of(context).unfocus();
+                        alert(context, "파일 이름 변경에 성공했습니다.", "확인", onTap: () {
+                          Navigator.of(context).pop();
+                        });
+                      }
+                    });
               }, "이름변경"),
               Container(
                   color: Colors.black,
                   height: 0.3
               ),
-              _oneOfList(context, (){
+              _oneOfList(context, () {
                 //여기에 공유함수
                 alert(context, "서비스 준비 중입니다.", "닫기");
               }, "공유하기"),
@@ -53,7 +74,7 @@ class CustomListAlert extends StatelessWidget {
                   color: Colors.black,
                   height: 0.3
               ),
-              _oneOfList(context, (){
+              _oneOfList(context, () {
                 alert(context, "서비스 준비 중입니다.", "닫기");
               }, "삭제하기"),
             ],
@@ -62,9 +83,13 @@ class CustomListAlert extends StatelessWidget {
       ),
     );
   }
-  Widget _oneOfList(BuildContext context, Function onTap, String listTitle){
-    return  Container(
-      width: MediaQuery.of(context).size.width,
+
+  Widget _oneOfList(BuildContext context, Function onTap, String listTitle) {
+    return Container(
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       child: FlatButton(
         onPressed: onTap,
         child: Text(listTitle, textAlign: TextAlign.center,
@@ -72,13 +97,84 @@ class CustomListAlert extends StatelessWidget {
       ),
     );
   }
+
+  Voice voice;
+  Voice _getVoice(int voiceID) {
+    _findVoice(context, voiceID).then((Voice result) {
+      setState(() {
+        voice = result;
+      });
+    });
+    return voice;
+  }
+
+  Future<Voice> _findVoice(BuildContext context, int voiceID) async {
+    try {
+      APIClient client = APIClient();
+      Voice currentVoice = await client.getVoice(voiceID);
+      return currentVoice;
+    } catch (e) {
+      if (e is APIException) {
+        if (e.errorCode == APIStatus.InvalidParameter) {
+          alert(context, "올바른 정보를 입력해주세요.", "확인");
+          return null;
+        } else if (e.errorCode == APIStatus.UnknownSession) {
+          alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          });
+          return null;
+        } else if (e.errorCode == APIStatus.NotFound) {
+          alert(context, "음원 정보가 존재하지 않습니다.", "확인", onTap: () {
+            Navigator.of(context).pop();
+          });
+          return null;
+        }
+      }
+      alert(context, "알 수 없는 에러가 발생했습니다.", "확인");
+      print(e);
+      return null;
+    }
+  }
+
+  Future<bool> _updateVoiceTitle(BuildContext context, int voiceID, String voiceName) async {
+    try {
+      APIClient client = APIClient();
+      await client.updateVoiceName(voiceID, voiceName);
+      return true;
+    } catch (e) {
+      if (e is APIException) {
+        if (e.errorCode == APIStatus.InvalidParameter) {
+          alert(context, "올바른 정보를 입력해주세요.", "확인");
+          return false;
+        } else if (e.errorCode == APIStatus.UnknownSession) {
+          alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          });
+          return false;
+        } else if (e.errorCode == APIStatus.NotFound) {
+          alert(context, "음원 정보가 존재하지 않습니다.", "확인", onTap: () {
+            Navigator.of(context).pop();
+          });
+          return false;
+        } else if (e.errorCode == APIStatus.Duplicated) {
+          alert(context, "중복된 제목이 존재합니다.", "확인", onTap: () {
+            Navigator.of(context).pop();
+          });
+          return false;
+        }
+      }
+      alert(context, "알 수 없는 에러가 발생했습니다.", "확인");
+      print(e);
+      return false;
+    }
+  }
 }
 
-void listAlert(BuildContext context, TextEditingController inputController) {
+void listAlert(BuildContext context, TextEditingController inputController, Voice _voice) {
   showDialog(
       context: context,
       builder: (BuildContext context) {
-        return CustomListAlert(inputController);
+        return CustomListAlert(inputController, _voice);
       }
   );
 }
