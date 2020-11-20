@@ -9,60 +9,25 @@ import 'package:deepvoice/view/page/friendList.dart';
 import 'package:deepvoice/view/widget/alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:deepvoice/view/page/myPage.dart';
 
-class SideBar extends StatefulWidget {
-  final Future<User> _user;
+class SideBar extends StatelessWidget {
+  final User user;
 
-  SideBar(this._user);
+  SideBar(this.user);
 
-  @override
-  _SideBarState createState() => _SideBarState();
-}
-
-class _SideBarState extends State<SideBar>{
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       child: SafeArea(
         child: Drawer(
-          child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 28.0),
-            children: <Widget>[
+          child: Column(
+            children: [
               _closingIcon(context),
-              SizedBox(height: 30.5),
-              _userBot(),
-              SizedBox(height: 14.3),
-              _userName(),
-              SizedBox(height: 7),
-              _userInfo(),
-              SizedBox(height: 43.5),
-              _itemOfListTile(context, 'assets/sidemenu_mypage.png', '마이페이지', ()  async{
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => null),);
-                },
-              ),
-              SizedBox(height: 7),
-              _itemOfListTile(context, 'assets/sidemenu_album.png', '음성앨범', () async {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => AlbumPage()),);
-              },
-              ),
-              SizedBox(height: 7),
-              _itemOfListTile(context, 'assets/sidemenu_friend.png', '친구관리', () async{
-                Navigator.push(context, MaterialPageRoute(builder: (context) => FriendListPage()),);
-              },
-              ),
-              SizedBox(height: 7),
-              _itemOfListTile(context, 'assets/sidemenu_share.png', '공유관리', () async{
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => null),);
-              },
-              ),
-              SizedBox(height: 7),
-              _itemOfListTile(context, 'assets/sidemenu_push.png', '푸시관리', () async{
-              Navigator.of(context).push(MaterialPageRoute(builder: (context) => null),);
-              },
-              ),
-              SizedBox(height: 155),
-              _itemOfListTile(context, 'assets/sidemenu_logout.png', '로그아웃', _onTapLogout(context)
-              ),
+              SizedBox(height: 20.5),
+              _userProfile(context),
+              SizedBox(height: 20.5),
+              Expanded(child: this._buttonList(context)),
             ],
           ),
         ),
@@ -70,35 +35,12 @@ class _SideBarState extends State<SideBar>{
     );
   }
 
-  Future<String> _findSessionID() async{
-    Preference p = await loadPreference();
-    return p.sessionID;
-  }
-
-  String userSessionId = "";
-  _getSessionId() async{
-    _findSessionID().then((String result){
-      setState((){
-        userSessionId = result;
-      });
-    });
-  }
-
-  User currentUser;
-  _getUser() async{
-    this.widget._user.then((User result){
-      setState((){
-        currentUser = result;
-      });
-    });
-  }
-
   Widget _closingIcon(BuildContext context) {
     return Container(
       child:
       Align(
         alignment: Alignment.topRight,
-        child:IconButton(
+        child: IconButton(
           icon: Icon(Icons.close),
           onPressed: () => {Navigator.pop(context)},
           iconSize: 12.0,
@@ -108,57 +50,125 @@ class _SideBarState extends State<SideBar>{
     );
   }
 
-  Widget _userBot() {
-    _getUser();
+  Widget _userProfile(BuildContext context) {
     return Container(
-      width: 75,
-      height: 75,
-      child: currentUser.bot.avatar.toCircleImage(),
+        alignment: Alignment.center,
+        width: double.infinity,
+        child: Column(
+          children: [
+            _userBot(context),
+            SizedBox(height: 14.3),
+            _userName(),
+            SizedBox(height: 7),
+            _userInfo(),
+          ],
+        )
+    );
+  }
+
+  Widget _userBot(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width / 3.0,
+      height: MediaQuery.of(context).size.width / 3.0,
+      child: this.user.bot.avatar.toCircleImage(),
     );
   }
 
   Widget _userName() {
-    _getUser();
     return Text(
-      currentUser.nick,
-        style: TextStyle(color: Colors.black, fontSize: 14),
+        this.user.nick,
+        style: TextStyle(color: Color(0xff333333)),
         textAlign: TextAlign.center);
   }
 
   Widget _userInfo() {
-    _getUser();
     return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Text(
-            (DateTime.now().year - currentUser.birth.year).toString(),
-            style: TextStyle(color: Colors.black, fontSize: 11.5),
+            (DateTime.now().year - this.user.birth.year).toString(),
             textAlign: TextAlign.center,
           ),
           Text(
             '세 / ',
-            style: TextStyle(color: Colors.black, fontSize: 11.5),
             textAlign: TextAlign.center,
           ),
           Text(
-            currentUser.gender.toString(),
-            style: TextStyle(color: Colors.black, fontSize: 11.5),
+            this.user.gender.toString(),
             textAlign: TextAlign.center,
           ),
         ]);
   }
 
-  Widget _itemOfListTile(BuildContext context, String imageUrl, String titleText, Function onTap) {
-    return ListTile(
-      leading: Container(
-        height: 13,
-        width: 11,
-        child: Image.asset(imageUrl),
+  Widget _buttonList(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 28.0),
+      width: double.infinity,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _buttonListWithoutLogout(context),
+          Column(
+            children: [
+              _button(context, 'assets/sidemenu_logout.png', '로그아웃', _onTapLogout(context)),
+              SizedBox(height: 14.3),
+            ],
+          )
+        ],
       ),
-      title: Text(
-        titleText,
-        style: TextStyle(fontSize: 10.5, height: 0),
+    );
+  }
+
+  Widget _buttonListWithoutLogout(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      child: Column(
+        children: [
+          _button(context, 'assets/sidemenu_mypage.png', '마이페이지', ()  async{
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MyPage()),);
+          },
+          ),
+          _button(context, 'assets/sidemenu_album.png', '음성앨범', () async {
+            Navigator.push(context, MaterialPageRoute(builder: (context) => AlbumPage()),);
+          },
+          ),
+          _button(context, 'assets/sidemenu_friend.png', '친구관리', () async{
+            Navigator.push(context, MaterialPageRoute(builder: (context) => FriendListPage()),);
+          },
+          ),
+          _button(context, 'assets/sidemenu_share.png', '공유관리', () async{
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => null),);
+          },
+          ),
+          _button(context, 'assets/sidemenu_push.png', '푸시관리', () async{
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => null),);
+          },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _button(BuildContext context, String imageUrl, String titleText, Function onTap) {
+    return InkWell(
+      child: Container(
+        width: double.infinity,
+        height: 50.0,
+        alignment: Alignment.center,
+        child:  Container(
+          child: Row(
+            children: [
+              Container(
+                height: 13,
+                width: 11,
+                child: Image.asset(imageUrl),
+              ),
+              SizedBox(width: 34.0),
+              Text(titleText),
+            ],
+          ),
+        ),
       ),
       onTap: onTap,
     );
@@ -166,7 +176,6 @@ class _SideBarState extends State<SideBar>{
 
   Function _onTapLogout(BuildContext context){
     return () async{
-      _getSessionId();
       bool ok = await _logout(context);
       if (ok) {
         FocusScope.of(context).unfocus();
@@ -180,7 +189,7 @@ class _SideBarState extends State<SideBar>{
   Future<bool> _logout(BuildContext context) async{
     try {
       APIClient client = APIClient();
-      await client.logout(userSessionId);
+      await client.logout();
       return true;
     } catch (e) {
       if (e is APIException) {
