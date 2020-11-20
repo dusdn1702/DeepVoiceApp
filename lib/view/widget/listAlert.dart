@@ -2,6 +2,7 @@ import 'package:deepvoice/api/client.dart';
 import 'package:deepvoice/api/exception.dart';
 import 'package:deepvoice/api/response.dart';
 import 'package:deepvoice/model/voice.dart';
+import 'package:deepvoice/view/page/album.dart';
 import 'package:deepvoice/view/widget/alert.dart';
 import 'package:deepvoice/view/widget/audioPlayer.dart';
 import 'package:deepvoice/view/widget/textAlert.dart';
@@ -98,8 +99,7 @@ class _CustomListAlertState extends State<CustomListAlert> {
           .width,
       child: FlatButton(
         onPressed: onTap,
-        child: Text(listTitle, textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 11)),
+        child: Text(listTitle, textAlign: TextAlign.center),
       ),
     );
   }

@@ -48,14 +48,13 @@ class _CustomAudioPlayerState extends State<CustomAudioPlayer> {
                   alignment: Alignment.topRight,
                   child: IconButton(
                     padding: EdgeInsets.only(top: 18.3),
-                    icon: const Icon(Icons.close, size: 10),
+                    icon: const Icon(Icons.close),
                     onPressed: () => {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => AlbumPage()))
                   },
                   ),
                 ),
                 Container(
-                  padding: EdgeInsets.only(left: 0),
                   child: Text(this.widget._voice.name),
                 ),
                 SizedBox(height: 13),
@@ -70,9 +69,7 @@ class _CustomAudioPlayerState extends State<CustomAudioPlayer> {
                           width: 23.8,
                           child: Text(
                             "${position.inMinutes}:${position.inSeconds.remainder(60)}",
-                            style: TextStyle(
-                              fontSize: 11,
-                            ),),),
+                          ),),
                         Container(
                           width: 248,
                         ),
@@ -80,9 +77,6 @@ class _CustomAudioPlayerState extends State<CustomAudioPlayer> {
                           width: 23.8,
                           child: Text(
                             "${musicLength.inMinutes}:${musicLength.inSeconds.remainder(60)}",
-                            style: TextStyle(
-                              fontSize: 11,
-                            ),
                           ),
                         ),
                       ],
@@ -136,6 +130,8 @@ class _CustomAudioPlayerState extends State<CustomAudioPlayer> {
   Widget _playButton(int voiceID) {
     return
       FlatButton(
+        highlightColor: Colors.transparent,
+        splashColor: Colors.transparent,
         onPressed: () async{
           if (!playing) {
             print(this.widget._voice.data.length);
@@ -159,14 +155,14 @@ class _CustomAudioPlayerState extends State<CustomAudioPlayer> {
   Widget _playButtonIcon(){
     if(playing) return Container(
       color: Colors.white,
-      width: 35.8,
-      height: 35.8,
+      width: 50,
+      height: 50,
       child: Image.asset('assets/popup_pause.png'),
     );
     else return Container(
       color: Colors.white,
-      width: 35.8,
-      height: 35.8,
+      width: 50,
+      height: 50,
       child: Image.asset('assets/popup_play.png'),
     );
   }
