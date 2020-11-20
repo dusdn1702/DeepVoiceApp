@@ -49,9 +49,9 @@ class CustomAlert extends StatelessWidget {
 
 void alert(BuildContext context, String message, String buttonText, {Function onTap}) {
   showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return CustomAlert(message, buttonText, onTap: onTap);
-      }
+    context: context,
+    builder: (BuildContext context) {
+      return CustomAlert(message, buttonText, onTap: onTap);
+    }
   );
 }

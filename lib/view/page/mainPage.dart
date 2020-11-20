@@ -1,14 +1,13 @@
+import 'package:flutter/material.dart';
+
 import 'package:deepvoice/api/client.dart';
 import 'package:deepvoice/api/exception.dart';
 import 'package:deepvoice/api/response.dart';
 import 'package:deepvoice/model/user.dart';
 import 'package:deepvoice/view/widget/alert.dart';
 import 'package:deepvoice/view/widget/sidebar.dart';
-import 'package:flutter/material.dart';
-import 'package:deepvoice/view/widget/mainProfileImage.dart';
 
 class MainPage extends StatefulWidget {
-
   @override
   _MainPageState createState() => _MainPageState();
 }
@@ -29,29 +28,31 @@ class _MainPageState extends State<MainPage> {
       endDrawer: this._currentUser == null ? Container() : SideBar(this._currentUser),
       body: GestureDetector(
         child: SafeArea(
-          child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 18),
-            children: [
-              SizedBox(height: 13.0),
-              _mainProfile(),
-              SizedBox(height: 22),
-              Row(
-                children: [
-                  Expanded(child: _btnConvert(context)),
-                  SizedBox(width: 20),
-                  Expanded(child: _btnLearn(context)),
-                  SizedBox(width: 20),
-                  Expanded(child: _btnEmotion(context))
-                ],
-              ),
-              SizedBox(height: 19),
-              _btnChat(context),
-              SizedBox(height: 55)
-            ],
+          child: Container(
+            color: Color(0xfff2f3f8),
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              children: [
+                SizedBox(height: 13.0),
+                Expanded(child: _mainProfile()),
+                SizedBox(height: 22),
+                Row(
+                  children: [
+                    Expanded(child: _btnConvert(context)),
+                    SizedBox(width: 20),
+                    Expanded(child: _btnLearn(context)),
+                    SizedBox(width: 20),
+                    Expanded(child: _btnEmotion(context))
+                  ],
+                ),
+                SizedBox(height: 19),
+                _btnChat(context),
+                SizedBox(height: 19)
+              ],
+            ),
           ),
         ),
       ),
-      backgroundColor: Color(0xfff2f3f8),
     );
   }
 
@@ -73,7 +74,6 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget _mainProfile() {
-
     return Container(
       padding: EdgeInsets.all(20.0),
       decoration: BoxDecoration(
@@ -83,35 +83,32 @@ class _MainPageState extends State<MainPage> {
         ),
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Text("Lv.",
                   style: TextStyle(color: Color(0xff333333), fontSize: 18)),
-              Text("21",
+              Text("1",
                   style: TextStyle(
                       color: Color(0xff333333),
                       fontSize: 28,
                       fontWeight: FontWeight.bold))
-              //봇레벨은 TTS 구현 후에 추가
             ],
           ),
           SizedBox(height: 12.0),
-          Text(_currentUser.nick,
-              style: TextStyle(color: Color(0xff333333), fontSize: 24)),
+          Text(this._currentUser == null ? "" : this._currentUser.nick, style: TextStyle(color: Color(0xff333333), fontSize: 24)),
           SizedBox(height: 18),
           Row(
             children: [
               SizedBox(width: 27.5),
-              Expanded(child: this._currentUser == null ? Container() : MainProfileImage(this._currentUser)),
+              Expanded(child: this._currentUser == null ? Container() : Container(child: this._currentUser.bot.avatar.toCircleImage())),
               SizedBox(width: 27.5)
             ],
           ),
           SizedBox(height: 27),
-          Text("레벨"),
-          Text("경험치바"),
-          Text("경험치")
+          _levelInfo(),
         ],
       ),
     );
@@ -176,7 +173,9 @@ class _MainPageState extends State<MainPage> {
           ],
         ),
         color: Colors.white,
-        onPressed: () {},
+        onPressed: () {
+          alert(context, "준비중입니다.", "확인");
+        },
       ),
     );
   }
@@ -208,7 +207,9 @@ class _MainPageState extends State<MainPage> {
           ],
         ),
         color: Colors.white,
-        onPressed: () {},
+        onPressed: () {
+          alert(context, "준비중입니다.", "확인");
+        },
       ),
     );
   }
@@ -243,10 +244,124 @@ class _MainPageState extends State<MainPage> {
             SizedBox(height: 14)
           ],
         ),
-        onPressed: () {},
+        onPressed: () {
+          alert(context, "준비중입니다.", "확인");
+        },
       ),
     );
   }
+
+  Widget _levelInfo() {
+    return Container(
+      child: Column(
+        children: [
+          _levelHeader(),
+          SizedBox(height: 8.0),
+          _levelGage(),
+          SizedBox(height: 8.0),
+          _levelPercent(),
+        ],
+      )
+    );
+  }
+
+  Widget _levelHeader() {
+    return Container(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text("Lv.1"),
+          Text("Lv.2")
+        ],
+      )
+    );
+  }
+
+  Widget _levelGage() {
+    return Stack(
+      children: [
+        Container(
+          width: double.infinity,
+          height: 20.0,
+          decoration: BoxDecoration(
+            color: Color(0xfff0e9ff),
+            borderRadius: const BorderRadius.horizontal(
+              left: const Radius.circular(10.0),
+              right: const Radius.circular(10.0),
+            ),
+          )
+        ),
+        Container(
+            width: 40.0,
+            height: 20.0,
+            decoration: BoxDecoration(
+              color: Color(0xffaf8eff),
+              borderRadius: const BorderRadius.horizontal(
+                left: const Radius.circular(10.0),
+                right: const Radius.circular(10.0),
+              ),
+            )
+        ),
+      ],
+    );
+  }
+
+  Widget _levelPercent() {
+    return Container(
+      width: double.infinity,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text("0",
+              style: TextStyle(
+                  color: Color(0xff333333),
+                  fontSize: 25,
+                  fontWeight: FontWeight.bold)),
+          Text("%",
+              style: TextStyle(
+                  color: Color(0xff333333),
+                  fontSize: 25)),
+          SizedBox(width: 12.0),
+          Text("(0/1,000)",
+              style: TextStyle(
+                  color: Color(0xff333333),
+                  fontSize: 20)),
+        ],
+      )
+    );
+  }
+
+  // Widget _btnConvert(BuildContext context) {
+  //   return Container(
+  //     child: RaisedButton(
+  //       shape: RoundedRectangleBorder(
+  //         borderRadius: BorderRadius.circular(7.5),
+  //         side: BorderSide(color: Theme.of(context).buttonColor, width: 3),
+  //       ),
+  //       child: Column(
+  //         children: [
+  //           SizedBox(height: 16),
+  //           Row(
+  //             children: [
+  //               SizedBox(width: 24),
+  //               Expanded(child: Image.asset('assets/main_convert.png')),
+  //               SizedBox(width: 24)
+  //             ],
+  //           ),
+  //           SizedBox(height: 6),
+  //           Text("음성변환",
+  //               style: TextStyle(
+  //                   color: Theme.of(context).buttonColor,
+  //                   fontSize: 15,
+  //                   fontWeight: FontWeight.bold)),
+  //           SizedBox(height: 15)
+  //         ],
+  //       ),
+  //       color: Colors.white,
+  //       onPressed: () {},
+  //     ),
+  //   );
+  // }
 
   Future<void> _findUser(BuildContext context) async {
     try {

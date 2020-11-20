@@ -1,9 +1,7 @@
-import 'package:deepvoice/model/user.dart';
-import 'package:deepvoice/model/voice.dart';
-import 'package:deepvoice/view/page/mainPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'package:deepvoice/view/page/mainPage.dart';
 import 'package:deepvoice/api/exception.dart';
 import 'package:deepvoice/api/response.dart';
 import 'package:deepvoice/view/widget/alert.dart';
@@ -86,7 +84,7 @@ class LoginPage extends StatelessWidget {
       if (ok) {
         FocusScope.of(context).unfocus();
         alert(context, "로그인에 성공했습니다.", "확인", onTap: (){
-          Navigator.of(context).push(
+          Navigator.of(context).pushReplacement(
             MaterialPageRoute(builder: (context) => MainPage()),
           );
         });

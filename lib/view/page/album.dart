@@ -1,3 +1,6 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+
 import 'package:deepvoice/api/client.dart';
 import 'package:deepvoice/api/exception.dart';
 import 'package:deepvoice/api/response.dart';
@@ -6,8 +9,6 @@ import 'package:deepvoice/view/widget/alert.dart';
 import 'package:deepvoice/view/widget/listAlert.dart';
 import 'package:deepvoice/view/widget/search.dart';
 import 'package:deepvoice/view/widget/textAlert.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 
 class AlbumPage extends StatefulWidget {
 
