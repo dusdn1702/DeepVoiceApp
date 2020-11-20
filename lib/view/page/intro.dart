@@ -3,15 +3,18 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:deepvoice/view/page/login.dart';
+import '../../preference.dart';
+import 'mainPage.dart';
 
 class IntroPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Timer(
       Duration(seconds: 2),
-      () {
+      () async {
+        Preference p =  await loadPreference();
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => p.isLogin() ? MainPage() : LoginPage()),
         );
       }
     );

@@ -51,6 +51,7 @@ class APIClient {
     await _call("api/v1/user/logout", {
       "session_id": id,
     });
+    await Preference("").save();
   }
 
   Future<void> signUp(String loginID, String loginPW, String nick, String gender, String birth, String avatar, String voice) async {
@@ -287,6 +288,9 @@ class APIClient {
         switch (e.errorCode) {
           case APIStatus.InvalidParameter:
             FlutterError.reportError(FlutterErrorDetails(exception: e));
+            break;
+          case APIStatus.UnknownSession:
+            await Preference("").save();
             break;
           default:
             break;

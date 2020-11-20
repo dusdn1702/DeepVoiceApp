@@ -13,6 +13,8 @@ import 'package:deepvoice/view/widget/twoButtonAlert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+import 'login.dart';
+
 class FriendListPage extends StatefulWidget {
   _FriendListState createState() => _FriendListState();
 }
@@ -44,7 +46,7 @@ class _FriendListState extends State<FriendListPage> {
                 SizedBox(height: 13.0),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Search(),
+                  // child: Search(),
                 ),
                 SizedBox(height: 10.0),
                 Expanded(child: _selectList(context, nowButton)),
@@ -114,7 +116,7 @@ class _FriendListState extends State<FriendListPage> {
           return null;
         } else if (e.errorCode == APIStatus.UnknownSession) {
           alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
           });
           return null;
         }
@@ -423,7 +425,7 @@ class _FriendListState extends State<FriendListPage> {
           return false;
         } else if (e.errorCode == APIStatus.UnknownSession) {
           alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
           });
           return false;
         }
@@ -459,7 +461,7 @@ class _FriendListState extends State<FriendListPage> {
           return false;
         } else if (e.errorCode == APIStatus.UnknownSession) {
           alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
           });
           return false;
         }
@@ -496,7 +498,7 @@ class _FriendListState extends State<FriendListPage> {
           return false;
         } else if (e.errorCode == APIStatus.UnknownSession) {
           alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
           });
           return false;
         }

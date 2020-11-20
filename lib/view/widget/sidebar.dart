@@ -4,6 +4,7 @@ import 'package:deepvoice/api/response.dart';
 import 'package:deepvoice/model/user.dart';
 import 'package:deepvoice/view/page/album.dart';
 import 'package:deepvoice/view/page/friendList.dart';
+import 'package:deepvoice/view/page/login.dart';
 import 'package:deepvoice/view/page/sharedList.dart';
 import 'package:deepvoice/view/widget/alert.dart';
 import 'package:deepvoice/view/widget/settingAvatarAlert.dart';
@@ -178,8 +179,8 @@ class SideBar extends StatelessWidget {
       bool ok = await _logout(context);
       if (ok) {
         FocusScope.of(context).unfocus();
-        alert(context, "로그아웃 완료", "확인", onTap: () {
-          Navigator.of(context).popUntil((route) => route.isFirst);
+        alert(context, "로그아웃 되었습니다.", "확인", onTap: () {
+          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
         });
       }
     };
@@ -197,7 +198,7 @@ class SideBar extends StatelessWidget {
           return false;
         } else if (e.errorCode == APIStatus.UnknownSession) {
           alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
           });
           return false;
         }

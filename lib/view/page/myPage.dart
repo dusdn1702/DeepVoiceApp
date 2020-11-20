@@ -12,6 +12,8 @@ import 'package:deepvoice/model/user.dart';
 import 'package:deepvoice/preference.dart';
 import 'package:deepvoice/view/widget/alert.dart';
 
+import 'login.dart';
+
 
 class MyPage extends StatefulWidget {
   @override
@@ -167,7 +169,7 @@ class _MyPageState extends State<MyPage> {
           return null;
         } else if (e.errorCode == APIStatus.UnknownSession) {
           alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
           });
           return null;
         } else if (e.errorCode == APIStatus.NotFound) {

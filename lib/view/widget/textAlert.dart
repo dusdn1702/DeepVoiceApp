@@ -19,7 +19,6 @@ class CustomTextAlert extends StatelessWidget {
       backgroundColor: Colors.transparent,
       child: FittedBox(
           child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20.0),
             width: MediaQuery.of(context).size.width - (28.0 * 2.0),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -29,22 +28,24 @@ class CustomTextAlert extends StatelessWidget {
             ),
             child: Column(
               children: [
-                Align(
+                Container(
                   alignment: Alignment.topRight,
-                  child:IconButton(
+                  child: IconButton(
                     icon: const Icon(Icons.close),
                     onPressed: () => {Navigator.pop(context)},
                     padding: EdgeInsets.only(top: 10),
                   ),
                 ),
-                Text(this.alertTitle, textAlign: TextAlign.center),
+                Text(this.alertTitle, textAlign: TextAlign.center, style: TextStyle(fontSize: 20.0)),
                 Container(
                   width: double.infinity,
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
                   child: CustomTextField("", hiddenText, TextInputType.text, false, this.inputController),
                 ),
                 SizedBox(height: 17.3),
                 Container(
                   width: double.infinity,
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
                   child: CustomButton(this.btnText, CustomButtonType.Default, () {
                     Navigator.of(context).pop();
                     if (this.onTap != null) {

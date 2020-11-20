@@ -3,6 +3,7 @@ import 'package:deepvoice/api/exception.dart';
 import 'package:deepvoice/api/response.dart';
 import 'package:deepvoice/model/voice.dart';
 import 'package:deepvoice/view/page/album.dart';
+import 'package:deepvoice/view/page/login.dart';
 import 'package:deepvoice/view/widget/alert.dart';
 import 'package:deepvoice/view/widget/audioPlayer.dart';
 import 'package:deepvoice/view/widget/textAlert.dart';
@@ -11,16 +12,16 @@ import 'package:flutter/material.dart';
 
 class CustomListAlert extends StatefulWidget {
   final TextEditingController _voiceTitleController;
+  final Function onRefresh;
   Voice voice;
 
-  CustomListAlert(this._voiceTitleController, this.voice);
+  CustomListAlert(this._voiceTitleController, this.voice, this.onRefresh);
 
   @override
   _CustomListAlertState createState() => _CustomListAlertState();
 }
 
 class _CustomListAlertState extends State<CustomListAlert> {
-
   @override
   void initState() {
     _findVoice(context, this.widget.voice.id).then((Voice result) {
@@ -63,6 +64,7 @@ class _CustomListAlertState extends State<CustomListAlert> {
                       bool ok = await _updateVoiceTitle(context, this.widget.voice.id, this.widget._voiceTitleController.text);  //voiceID
                       if (ok) {
                         FocusScope.of(context).unfocus();
+                        this.widget.onRefresh();
                         alert(context, "파일 이름 변경에 성공했습니다.", "확인", onTap: () {
                           Navigator.of(context).pop();
                         });
@@ -116,7 +118,7 @@ class _CustomListAlertState extends State<CustomListAlert> {
           return null;
         } else if (e.errorCode == APIStatus.UnknownSession) {
           alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
           });
           return null;
         } else if (e.errorCode == APIStatus.NotFound) {
@@ -144,7 +146,7 @@ class _CustomListAlertState extends State<CustomListAlert> {
           return false;
         } else if (e.errorCode == APIStatus.UnknownSession) {
           alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
           });
           return false;
         } else if (e.errorCode == APIStatus.NotFound) {
@@ -166,11 +168,11 @@ class _CustomListAlertState extends State<CustomListAlert> {
   }
 }
 
-void listAlert(BuildContext context, TextEditingController inputController, Voice _voice) {
+void listAlert(BuildContext context, TextEditingController inputController, Voice _voice, Function onRefresh) {
   showDialog(
       context: context,
       builder: (BuildContext context) {
-        return CustomListAlert(inputController, _voice);
+        return CustomListAlert(inputController, _voice, onRefresh);
       }
   );
 }

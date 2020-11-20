@@ -1,3 +1,4 @@
+import 'package:deepvoice/view/widget/textAlert.dart';
 import 'package:flutter/material.dart';
 
 import 'package:deepvoice/api/client.dart';
@@ -7,12 +8,15 @@ import 'package:deepvoice/model/user.dart';
 import 'package:deepvoice/view/widget/alert.dart';
 import 'package:deepvoice/view/widget/sidebar.dart';
 
+import 'login.dart';
+
 class MainPage extends StatefulWidget {
   @override
   _MainPageState createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
+  final _voiceInputController = TextEditingController();
   User _currentUser;
 
   @override
@@ -140,7 +144,12 @@ class _MainPageState extends State<MainPage> {
           ],
         ),
         color: Colors.white,
-        onPressed: () {},
+        onPressed: () {
+          textAlert(context, "음성추가", "추가하고자 하는 텍스트를 입력하세요.", "추가하기", this._voiceInputController, onTap: () {
+            this._addVoice(this._voiceInputController.text);
+            this._voiceInputController.clear();
+          });
+        },
       ),
     );
   }
@@ -330,38 +339,6 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  // Widget _btnConvert(BuildContext context) {
-  //   return Container(
-  //     child: RaisedButton(
-  //       shape: RoundedRectangleBorder(
-  //         borderRadius: BorderRadius.circular(7.5),
-  //         side: BorderSide(color: Theme.of(context).buttonColor, width: 3),
-  //       ),
-  //       child: Column(
-  //         children: [
-  //           SizedBox(height: 16),
-  //           Row(
-  //             children: [
-  //               SizedBox(width: 24),
-  //               Expanded(child: Image.asset('assets/main_convert.png')),
-  //               SizedBox(width: 24)
-  //             ],
-  //           ),
-  //           SizedBox(height: 6),
-  //           Text("음성변환",
-  //               style: TextStyle(
-  //                   color: Theme.of(context).buttonColor,
-  //                   fontSize: 15,
-  //                   fontWeight: FontWeight.bold)),
-  //           SizedBox(height: 15)
-  //         ],
-  //       ),
-  //       color: Colors.white,
-  //       onPressed: () {},
-  //     ),
-  //   );
-  // }
-
   Future<void> _findUser(BuildContext context) async {
     try {
       APIClient client = APIClient();
@@ -376,7 +353,7 @@ class _MainPageState extends State<MainPage> {
           return;
         } else if (e.errorCode == APIStatus.UnknownSession) {
           alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
           });
           return;
         } else if (e.errorCode == APIStatus.NotFound) {
@@ -387,6 +364,30 @@ class _MainPageState extends State<MainPage> {
       alert(context, "알 수 없는 에러가 발생했습니다.", "확인");
       print(e);
       return;
+    }
+  }
+
+  Future<void> _addVoice(String text) async{
+    try {
+      APIClient client = APIClient();
+      await client.addVoice(text);
+      alert(context, "앨범에 저장되었습니다.", "확인");
+      return;
+    } catch (e) {
+      if (e is APIException) {
+        if (e.errorCode == APIStatus.InvalidParameter) {
+          alert(context, "올바른 정보를 입력해주세요.", "확인");
+          return null;
+        } else if (e.errorCode == APIStatus.UnknownSession) {
+          alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
+          });
+          return null;
+        }
+      }
+      alert(context, "알 수 없는 에러가 발생했습니다.", "확인");
+      print(e);
+      return null;
     }
   }
 }

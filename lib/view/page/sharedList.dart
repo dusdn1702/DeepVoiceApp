@@ -32,7 +32,7 @@ class _SharedListState extends State<SharedListPage> {
                 SizedBox(height: 13.0),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
-                  child: Search(),
+                  // child: Search(),
                 ),
                 SizedBox(height: 10.0),
                 Expanded(child: _selectList(context, nowButton)),

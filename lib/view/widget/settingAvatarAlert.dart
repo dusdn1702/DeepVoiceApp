@@ -3,6 +3,7 @@ import 'package:deepvoice/api/exception.dart';
 import 'package:deepvoice/api/response.dart';
 import 'package:deepvoice/model/bot.dart';
 import 'package:deepvoice/model/user.dart';
+import 'package:deepvoice/view/page/login.dart';
 import 'package:deepvoice/view/widget/alert.dart';
 import 'package:deepvoice/view/widget/textfield.dart';
 import 'package:flutter/cupertino.dart';
@@ -225,7 +226,7 @@ class _SettingAvatarAlertState extends State<SettingAvatarAlert> {
           return false;
         } else if (e.errorCode == APIStatus.UnknownSession) {
           alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
-            Navigator.of(context).popUntil((route) => route.isFirst);
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
           });
           return false;
         } else if (e.errorCode == APIStatus.NotFound) {
