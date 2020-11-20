@@ -44,9 +44,10 @@ class APIClient {
     await Preference(v.sessionID).save();
   }
 
-  Future<void> logout(String sessionID) async {
+  Future<void> logout() async {
+    String id =  await _getSessionID();
     await _call("api/v1/user/logout", {
-      "session_id": sessionID,
+      "session_id": id,
     });
   }
 
@@ -185,8 +186,8 @@ class APIClient {
       APIResponse res = APIResponse.fromJson(json.decode(httpBody));
       if (res.status != APIStatus.Okay) {
         throw APIException(
-          httpStatus: response.statusCode, 
-          errorCode: res.status, 
+          httpStatus: response.statusCode,
+          errorCode: res.status,
           errorMessage: res.message,
         );
       }

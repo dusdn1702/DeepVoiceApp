@@ -25,5 +25,6 @@ class APIStatus {
   static const Duplicated          = 403;
   static const NotFound            = 404;
 
+  
   static const InternalServerError = 500;
 }
