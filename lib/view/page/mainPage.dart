@@ -100,12 +100,11 @@ class _MainPageState extends State<MainPage> {
           SizedBox(height: 12.0),
           Text(this._currentUser == null ? "" : this._currentUser.nick, style: TextStyle(color: Color(0xff333333), fontSize: 24)),
           SizedBox(height: 18),
-          Row(
-            children: [
-              SizedBox(width: 27.5),
-              Expanded(child: this._currentUser == null ? Container() : Container(child: this._currentUser.bot.avatar.toCircleImage())),
-              SizedBox(width: 27.5)
-            ],
+          Expanded(
+              child: this._currentUser == null ? Container() : Container(
+                alignment: Alignment.center,
+                child: this._currentUser.bot.avatar.toCircleImage()
+              ),
           ),
           SizedBox(height: 27),
           _levelInfo(),
