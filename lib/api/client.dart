@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:deepvoice/model/progress.dart';
+import 'package:deepvoice/model/share.dart';
 import 'package:flutter/foundation.dart';
 
 import 'package:deepvoice/model/voice.dart';
@@ -144,6 +146,90 @@ class APIClient {
       "session_id": id,
       "voice_id": voiceID,
       "name": name,
+    });
+  }
+
+  Future<List<User>> getFriendList(ProgressStatus status, {String loginID}) async {
+    String id =  await _getSessionID();
+    List<dynamic> res = await _call("api/v1/friend/list", {
+      "session_id": id,
+      "status": status.get(),
+      "friend_login_id": loginID != null ? loginID : "",
+    });
+
+    return res.map((dynamic v) {
+      UserDTO dto = UserDTO.fromJson(v);
+      return User.fromDTO(dto);
+    }).toList();
+  }
+
+  Future<void> addFriend(String loginID) async {
+    String id =  await _getSessionID();
+    await _call("api/v1/friend/add", {
+      "session_id": id,
+      "receiver_login_id": loginID,
+    });
+  }
+
+  Future<void> acceptFriend(String userID) async {
+    String id =  await _getSessionID();
+    await _call("api/v1/friend/accept", {
+      "session_id": id,
+      "friend_user_id": userID,
+    });
+  }
+
+  Future<void> deleteFriend(String userID) async {
+    String id =  await _getSessionID();
+    await _call("api/v1/friend/delete", {
+      "session_id": id,
+      "friend_user_id": userID,
+    });
+  }
+
+  Future<List<Share>> getShareList(ProgressStatus status) async {
+    String id =  await _getSessionID();
+    List<dynamic> res = await _call("api/v1/share/list", {
+      "session_id": id,
+      "status": status.get(),
+    });
+
+    return res.map((dynamic v) {
+      ShareDTO dto = ShareDTO.fromJson(v);
+      return Share.fromDTO(dto);
+    }).toList();
+  }
+
+  Future<void> addShare(int voiceID, int userID) async {
+    String id =  await _getSessionID();
+    await _call("api/v1/share/add", {
+      "session_id": id,
+      "voice_id": voiceID,
+      "friend_user_id": userID,
+    });
+  }
+
+  Future<void> acceptShare(String shareID) async {
+    String id =  await _getSessionID();
+    await _call("api/v1/share/accept", {
+      "session_id": id,
+      "share_id": shareID,
+    });
+  }
+
+  Future<void> denyShare(String shareID) async {
+    String id =  await _getSessionID();
+    await _call("api/v1/share/deny", {
+      "session_id": id,
+      "share_id": shareID,
+    });
+  }
+
+  Future<void> deleteShare(String shareID) async {
+    String id =  await _getSessionID();
+    await _call("api/v1/share/delete", {
+      "session_id": id,
+      "share_id": shareID,
     });
   }
 
