@@ -32,14 +32,12 @@ class CustomTextAlert extends StatelessWidget {
                 Align(
                   alignment: Alignment.topRight,
                   child:IconButton(
-                    icon: const Icon(Icons.close, size: 10),
+                    icon: const Icon(Icons.close),
                     onPressed: () => {Navigator.pop(context)},
-                    padding: EdgeInsets.only(top: 19, bottom: 8),
+                    padding: EdgeInsets.only(top: 10),
                   ),
                 ),
-                SizedBox(height: 7.8),
-                Text(this.alertTitle, textAlign: TextAlign.center, style: TextStyle(fontSize: 13.8),),
-                SizedBox(height: 16.5),
+                Text(this.alertTitle, textAlign: TextAlign.center),
                 Container(
                   width: double.infinity,
                   child: CustomTextField("", hiddenText, TextInputType.text, false, this.inputController),

@@ -171,7 +171,7 @@ class APIClient {
     });
   }
 
-  Future<void> acceptFriend(String userID) async {
+  Future<void> acceptFriend(int userID) async {
     String id =  await _getSessionID();
     await _call("api/v1/friend/accept", {
       "session_id": id,
@@ -179,7 +179,7 @@ class APIClient {
     });
   }
 
-  Future<void> deleteFriend(String userID) async {
+  Future<void> deleteFriend(int userID) async {
     String id =  await _getSessionID();
     await _call("api/v1/friend/delete", {
       "session_id": id,
@@ -209,7 +209,7 @@ class APIClient {
     });
   }
 
-  Future<void> acceptShare(String shareID) async {
+  Future<void> acceptShare(int shareID) async {
     String id =  await _getSessionID();
     await _call("api/v1/share/accept", {
       "session_id": id,
@@ -217,7 +217,7 @@ class APIClient {
     });
   }
 
-  Future<void> denyShare(String shareID) async {
+  Future<void> denyShare(int shareID) async {
     String id =  await _getSessionID();
     await _call("api/v1/share/deny", {
       "session_id": id,
@@ -225,7 +225,7 @@ class APIClient {
     });
   }
 
-  Future<void> deleteShare(String shareID) async {
+  Future<void> deleteShare(int shareID) async {
     String id =  await _getSessionID();
     await _call("api/v1/share/delete", {
       "session_id": id,

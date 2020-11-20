@@ -35,8 +35,7 @@ class CustomTwoButtonAlert extends StatelessWidget {
                         width: 130,
                         child: CustomButton(
                             "확인", CustomButtonType.Positive, () {
-                          Navigator.of(context).pop();
-                          //여기서 친구 요청 취소 함수
+                              this.onTap();
                         }),
                       ),
                       SizedBox(width: 29.5),

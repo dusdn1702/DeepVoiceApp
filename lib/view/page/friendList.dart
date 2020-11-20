@@ -1,5 +1,10 @@
+import 'package:deepvoice/api/client.dart';
+import 'package:deepvoice/api/exception.dart';
+import 'package:deepvoice/api/response.dart';
 import 'package:deepvoice/model/bot.dart';
+import 'package:deepvoice/model/progress.dart';
 import 'package:deepvoice/model/user.dart';
+import 'package:deepvoice/view/widget/alert.dart';
 import 'package:deepvoice/view/widget/appbar.dart';
 import 'package:deepvoice/view/widget/button.dart';
 import 'package:deepvoice/view/widget/search.dart';
@@ -13,37 +18,38 @@ class FriendListPage extends StatefulWidget {
 }
 
 class _FriendListState extends State<FriendListPage> {
-  String nowButton = "친구목록";
+  String nowButton = ProgressStatus.DONE;
   TextEditingController _friendIdController = TextEditingController();
   List<User> friendList = [];
 
   @override
   void initState() {
-    // _findFriendList().then((List<User> result){
-    //   setState(() {
-    //     this.friendList = result;
-    //   });
-    // });
-    // super.initState();
+    _findFriendList(ProgressStatus.DONE).then((List<User> result) {
+      setState(() {
+        this.friendList = result;
+      });
+    });
+    super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(context),
       body: GestureDetector(
         child: SafeArea(
-          child: Column(
-            children: [
-              _choosingBar(context),
-              SizedBox(height: 13.0),
-              Container(
-                padding: EdgeInsets.symmetric(horizontal: 20.0),
-                child: Search(),
-              ),
-              SizedBox(height: 10.0),
-              Expanded(child: _selectList(context, nowButton)),
-            ],
-          )
+            child: Column(
+              children: [
+                _choosingBar(context),
+                SizedBox(height: 13.0),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Search(),
+                ),
+                SizedBox(height: 10.0),
+                Expanded(child: _selectList(context, nowButton)),
+              ],
+            )
         ),
         onTap: () {
           FocusScope.of(context).unfocus();
@@ -55,7 +61,9 @@ class _FriendListState extends State<FriendListPage> {
 
   Widget _appBar(BuildContext context) {
     return AppBar(
-      backgroundColor: Theme.of(context).primaryColor,
+      backgroundColor: Theme
+          .of(context)
+          .primaryColor,
       title: Text("친구관리"),
       leading: IconButton(
         icon: Icon(Icons.arrow_back),
@@ -81,193 +89,434 @@ class _FriendListState extends State<FriendListPage> {
         child: Row(
           children: [
             Expanded(
-              child: _selectOneColumn("친구목록"),
+              child: _selectOneColumn(ProgressStatus.DONE),
             ),
             Expanded(
-              child: _selectOneColumn("요청받음"),
+              child: _selectOneColumn(ProgressStatus.WAITING),
             ),
             Expanded(
-              child:_selectOneColumn("요청보냄"),
+              child: _selectOneColumn(ProgressStatus.RECEIVED),
             ),
           ],
         )
     );
   }
 
-  Widget _selectList(BuildContext context, String nowButton) {
-    if (nowButton == "친구목록"){
-      return _friendList(context);}
-    else if (nowButton == "요청받음"){
-      return _receiveFriendList();}
-    else {
-      return _sendFriendList(context);
+  Future<List<User>> _findFriendList(String status) async {
+    ProgressStatus progressStatus = new ProgressStatus.from(status);
+    try {
+      APIClient client = APIClient();
+      return await client.getFriendList(progressStatus);
+    } catch (e) {
+      if (e is APIException) {
+        if (e.errorCode == APIStatus.InvalidParameter) {
+          alert(context, "올바른 정보를 입력해주세요.", "확인");
+          return null;
+        } else if (e.errorCode == APIStatus.UnknownSession) {
+          alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          });
+          return null;
+        }
+      }
+      alert(context, "알 수 없는 에러가 발생했습니다.", "확인");
+      print(e);
+      return null;
     }
   }
 
-  Widget _selectOneColumn(String oneBox){
+  ListView _friendListView() {
+    return ListView.builder(
+        itemCount: this.friendList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return _friendListItem(context, this.friendList[index]);
+        }
+    );
+  }
+
+  ListView _sendFriendListView() {
+    return ListView.builder(
+        itemCount: this.friendList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return _sendFriendListItem(context, this.friendList[index]);
+        }
+    );
+  }
+
+  ListView _receiveFriendListView() {
+    return ListView.builder(
+        itemCount: this.friendList.length,
+        itemBuilder: (BuildContext context, int index) {
+          return _receiveFriendListItem(context, this.friendList[index]);
+        }
+    );
+  }
+
+  Widget _selectList(BuildContext context, String nowButton) {
+    if (nowButton == ProgressStatus.DONE) {
+      return _friendListView();
+    }
+    else if (nowButton == ProgressStatus.WAITING) {
+      return _sendFriendListView();
+    }
+    else {
+      return _receiveFriendListView();
+    }
+  }
+
+  Widget _selectOneColumn(String oneBox) {
+    String oneBoxName = _getFriendName(oneBox);
     return Column(
       children: [
         Container(
           height: 38.5,
           child: FlatButton(
-            child: Text(oneBox,
+            child: Text(oneBoxName,
               style: TextStyle(color: Colors.white),
             ),
             onPressed: () {
-              setState(() {
-                nowButton = oneBox;
-                _receiveFriendList();
+              _findFriendList(oneBox).then((List<User> result) {
+                setState(() {
+                  this.nowButton = oneBox;
+                  this.friendList = result;
+                });
               });
+              _selectList(context, oneBox);
             },
           ),),
-        if(nowButton==oneBox)
+        if(this.nowButton == oneBox)
           Container(
-            width: 40,
+            width: 43,
             height: 3,
             color: Colors.white,
           )
       ],);
   }
 
-  Widget _friendList(BuildContext context) {
-    return Container(
-        padding: EdgeInsets.symmetric(horizontal: 30.0),
-        width: double.infinity,
-        child: Row(
-          children: [
-            Container(
-              height: 33,
-              width: 33,
-              child: AvatarType.from("BEAR").toCircleImage(),
-            ),
-            SizedBox(width: 15),
-            Expanded(
-              child: Container(
-                  child: Text("Friend.name", style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ))
-              ),
-            ),
-            InkWell(
-              highlightColor: Colors.transparent,
-              splashColor: Colors.transparent,
-              child: Container(
-                width: 20,
-                height: 25,
-                child: Image.asset("assets/friend_delete.png"),
-              ),
-              onTap: () {
-                print("aaaaa");
-                twoButtonAlert(context, "친구를 삭제하시겠습니까?");
-              },
-            ),
-          ],
-        ));
-  }
-
-  Widget _receiveFriendList() {
+  Widget _friendListItem(BuildContext context, User friend) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 30.0),
       width: MediaQuery
           .of(context)
           .size
           .width,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: Column(
         children: [
           Container(
-            height: 33,
-            width: 33,
-            child: AvatarType.from("DOG").toCircleImage(),
-          ),
-          SizedBox(width: 10,),
-          Expanded(
-            child: Container(
-                width: 140,
-                child: Text("Friend.name", style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
-                ))
-            ),
-          ),
-          SizedBox(width: 110),
-          Container(
+            height: 65,
             child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  InkWell(
-                    highlightColor: Colors.transparent,
-                    splashColor: Colors.transparent,
-                    child: Container(
-                      width: 20,
-                      height: 25,
-                      child: Image.asset("assets/friend_accept.png"),
-                    ),
-                    onTap: () => {},
+                  Container(
+                    height: 50,
+                    width: 50,
+                    child: friend.bot.avatar.toCircleImage(),
                   ),
-                  SizedBox(width: 15,),
-                  InkWell(
-                    highlightColor: Colors.transparent,
-                    splashColor: Colors.transparent,
+                  SizedBox(width: 10),
+                  Expanded(
                     child: Container(
-                      width: 20,
-                      height: 25,
-                      child: Image.asset("assets/friend_refuse.png"),
+                        width: 140,
+                        child: Text(friend.nick, style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ))
                     ),
-                    onTap: () => {},
+                  ),
+                  SizedBox(width: 110),
+                  Container(
+                    child: Row(
+                        children: [
+                          InkWell(
+                            highlightColor: Colors.transparent,
+                            splashColor: Colors.transparent,
+                            child: Container(
+                              width: 20,
+                              height: 25,
+                              child: Image.asset("assets/friend_delete.png"),
+                            ),
+                            onTap: () {
+                              twoButtonAlert(context, "친구를 삭제하시겠습니까?", onTap: () {
+                                _deleteFriend(friend.id);
+                              });
+                            },
+                          ),
+                        ]
+                    ),
                   ),
                 ]
-            ),
+            ),),
+          Container(
+            height: 1,
+            width: double.infinity,
+            color: Color(0xffcccccc),
           ),
-        ]
-      ),
+        ],),
     );
   }
 
-  Widget _sendFriendList(BuildContext context) {
+  Widget _receiveFriendListItem(BuildContext context, User friend) {
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 30.0),
-        width: double.infinity,
-        child: Row(
-          children: [
-            Container(
-              height: 33,
-              width: 33,
-              child: AvatarType.from("PANDA").toCircleImage(),
-            ),
-            SizedBox(width: 15),
-            Expanded(
-              child: Container(
-                  child: Text("Friend.name", style: TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ))
-              ),
-            ),
-            InkWell(
-              highlightColor: Colors.transparent,
-              splashColor: Colors.transparent,
-              child: Container(
-                width: 20,
-                height: 25,
-                child: Image.asset("assets/friend_refuse.png"),
-              ),
-              onTap: () {
-                twoButtonAlert(context, "친구요청을 취소하시겠습니까?");
-              },
-            ),
-          ],
-        ));
+      padding: EdgeInsets.symmetric(horizontal: 30.0),
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
+      child: Column(
+        children: [
+          Container(
+            height: 65,
+          child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  height: 50,
+                  width: 50,
+                  child: friend.bot.avatar.toCircleImage(),
+                ),
+                SizedBox(width: 10),
+                Expanded(
+                  child: Container(
+                      width: 140,
+                      child: Text(friend.nick, style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ))
+                  ),
+                ),
+                SizedBox(width: 110),
+                Container(
+                  child: Row(
+                      children: [
+                        InkWell(
+                          highlightColor: Colors.transparent,
+                          splashColor: Colors.transparent,
+                          child: Container(
+                            width: 20,
+                            height: 25,
+                            child: Image.asset("assets/friend_accept.png"),
+                          ),
+                          onTap: () {
+                            _acceptFriend(friend.id);
+                          },
+                        ),
+                        SizedBox(width: 15,),
+                        InkWell(
+                          highlightColor: Colors.transparent,
+                          splashColor: Colors.transparent,
+                          child: Container(
+                            width: 20,
+                            height: 25,
+                            child: Image.asset("assets/friend_refuse.png"),
+                          ),
+                          onTap: () {
+                            _deleteFriend(friend.id);
+                          },
+                        ),
+                      ]
+                  ),
+                ),
+              ]
+          ),),
+          Container(
+            height: 1,
+            width: double.infinity,
+            color: Color(0xffcccccc),
+          ),
+        ],),
+    );
   }
 
-  Widget _addFriendButton(BuildContext context){
-    return FloatingActionButton(
-        child: Image.asset("assets/friend_add.png"),
-        onPressed: () => {
-          textAlert(context, "친구추가", "친구의 아이디를 입력하세요", "추가하기", this._friendIdController)
-        },
+  Widget _sendFriendListItem(BuildContext context, User friend) {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 30.0),
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
+      child: Column(
+        children: [
+          Container(
+            height: 65,
+            child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 50,
+                    width: 50,
+                    child: friend.bot.avatar.toCircleImage(),
+                  ),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Container(
+                        width: 140,
+                        child: Text(friend.nick, style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ))
+                    ),
+                  ),
+                  SizedBox(width: 110),
+                  Container(
+                    child: Row(
+                        children: [
+                          InkWell(
+                            highlightColor: Colors.transparent,
+                            splashColor: Colors.transparent,
+                            child: Container(
+                              width: 20,
+                              height: 25,
+                              child: Image.asset("assets/friend_refuse.png"),
+                            ),
+                            onTap: () {
+                              twoButtonAlert(
+                                  context, "친구요청을 취소하시겠습니까?", onTap: _deleteFriend(friend.id));
+                            },
+                          ),
+                        ]
+                    ),
+                  ),
+                ]
+            ),),
+          Container(
+            height: 1,
+            width: double.infinity,
+            color: Color(0xffcccccc),
+          ),
+        ],),
     );
+  }
+
+  Widget _addFriendButton(BuildContext context) {
+    return FloatingActionButton(
+      child: Image.asset("assets/friend_add.png"),
+      onPressed: () {
+        textAlert(context, "친구추가", "친구의 아이디를 입력하세요", "추가하기",
+            this._friendIdController, onTap: () async {
+              bool ok = await _onTapAddFriend(this._friendIdController.text);
+              //voiceID
+              if (ok) {
+                FocusScope.of(context).unfocus();
+                alert(context, "친구 추가가 완료되었습니다.", "확인", onTap: () {
+                  //Navigator.of(context).pop();
+                });
+              } else {
+                alert(context, "친구 추가 실패", "닫기");
+              }
+              initState();
+            });
+      },
+    );
+  }
+
+  Future<bool> _onTapAddFriend(String friendID) async {
+    try {
+      APIClient client = APIClient();
+      await client.addFriend(friendID);
+      return true;
+    } catch (e) {
+      if (e is APIException) {
+        if (e.errorCode == APIStatus.InvalidParameter) {
+          alert(context, "올바른 정보를 입력해주세요.", "확인");
+          return false;
+        } else if (e.errorCode == APIStatus.UnknownSession) {
+          alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          });
+          return false;
+        }
+      }
+      alert(context, "알 수 없는 에러가 발생했습니다.", "확인");
+      print(e);
+      return false;
+    }
+  }
+
+  _acceptFriend(int friendID) async {
+    bool ok = await _onTapAcceptFriend(friendID);
+    if (ok) {
+      FocusScope.of(context).unfocus();
+      alert(context, "친구 추가가 완료되었습니다.", "확인", onTap: () {
+        //Navigator.of(context).pop();
+      });
+    } else {
+      alert(context, "친구 추가 실패", "닫기");
+    }
+    initState();
+  }
+
+  Future<bool> _onTapAcceptFriend(int friendID) async {
+    try {
+      APIClient client = APIClient();
+      await client.acceptFriend(friendID);
+      return true;
+    } catch (e) {
+      if (e is APIException) {
+        if (e.errorCode == APIStatus.InvalidParameter) {
+          alert(context, "올바른 정보를 입력해주세요.", "확인");
+          return false;
+        } else if (e.errorCode == APIStatus.UnknownSession) {
+          alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          });
+          return false;
+        }
+      }
+      alert(context, "알 수 없는 에러가 발생했습니다.", "확인");
+      print(e);
+      return false;
+    }
+  }
+
+  _deleteFriend(int friendID) async {
+    bool ok = await _onTapDeleteFriend(friendID);
+    //voiceID
+    if (ok) {
+      FocusScope.of(context).unfocus();
+      alert(context, "친구 삭제가 완료되었습니다.", "확인", onTap: () {
+        // Navigator.of(context).pop();
+      });
+    } else {
+      alert(context, "친구 삭제 실패", "닫기");
+    }
+    initState();
+  }
+
+  Future<bool> _onTapDeleteFriend(int friendID) async {
+    try {
+      APIClient client = APIClient();
+      await client.deleteFriend(friendID);
+      return true;
+    } catch (e) {
+      if (e is APIException) {
+        if (e.errorCode == APIStatus.InvalidParameter) {
+          alert(context, "올바른 정보를 입력해주세요.", "확인");
+          return false;
+        } else if (e.errorCode == APIStatus.UnknownSession) {
+          alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          });
+          return false;
+        }
+      }
+      alert(context, "알 수 없는 에러가 발생했습니다.", "확인");
+      print(e);
+      return false;
+    }
   }
 }
+
+String _getFriendName(String oneBox) {
+  if (oneBox == ProgressStatus.DONE) {
+    return "친구목록";
+  } else if (oneBox == ProgressStatus.RECEIVED) {
+    return "요청받음";
+  } else if (oneBox == ProgressStatus.WAITING) {
+    return "요청보냄";
+  }else return null;
+}
+
 
 
