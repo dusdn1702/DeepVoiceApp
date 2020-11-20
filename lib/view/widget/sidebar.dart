@@ -6,6 +6,7 @@ import 'package:deepvoice/view/page/album.dart';
 import 'package:deepvoice/view/page/friendList.dart';
 import 'package:deepvoice/view/page/sharedList.dart';
 import 'package:deepvoice/view/widget/alert.dart';
+import 'package:deepvoice/view/widget/settingAvatarAlert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deepvoice/view/page/myPage.dart';
@@ -124,7 +125,7 @@ class SideBar extends StatelessWidget {
       child: Column(
         children: [
           _button(context, 'assets/sidemenu_mypage.png', '마이페이지', ()  async{
-            Navigator.push(context, MaterialPageRoute(builder: (context) => MyPage()),);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => SettingAvatarAlert("아바타 설정", this.user.bot.avatar, "변경하기")),);
           },
           ),
           _button(context, 'assets/sidemenu_album.png', '음성앨범', () async {
