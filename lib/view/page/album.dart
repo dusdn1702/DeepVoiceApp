@@ -1,20 +1,15 @@
 import 'package:deepvoice/api/client.dart';
 import 'package:deepvoice/api/exception.dart';
 import 'package:deepvoice/api/response.dart';
-import 'package:deepvoice/model/user.dart';
 import 'package:deepvoice/model/voice.dart';
 import 'package:deepvoice/view/widget/alert.dart';
-import 'package:deepvoice/view/widget/appbar.dart';
-import 'package:deepvoice/view/widget/audioPlayer.dart';
 import 'package:deepvoice/view/widget/listAlert.dart';
 import 'package:deepvoice/view/widget/search.dart';
 import 'package:deepvoice/view/widget/textAlert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 class AlbumPage extends StatefulWidget {
-  List<Voice> voiceList;
 
   @override
   _AlbumPageState createState() => _AlbumPageState();
@@ -23,7 +18,17 @@ class AlbumPage extends StatefulWidget {
 class _AlbumPageState extends State<AlbumPage> {
   final _voiceTitleController = TextEditingController();
   final _voiceInputController = TextEditingController();
-  final DateFormat formatter = DateFormat('yyyy-MM-dd hh:mm');
+  List<Voice> voiceList = [];
+
+  @override
+  void initState() {
+    _findVoiceList().then((List<Voice> result){
+      setState(() {
+        this.voiceList = result;
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +36,12 @@ class _AlbumPageState extends State<AlbumPage> {
       appBar: _appBar(context),
       body: GestureDetector(
         child: SafeArea(
-          child: ListView(
+          child: Column(
             children: [
               SizedBox(height: 13.0),
               Search(),
               SizedBox(height: 10.0),
-              Column(
-                children: _getVoiceList(),
-              ),
+              Expanded(child: _voiceListView()),
             ],
           ),
         ),
@@ -53,9 +56,9 @@ class _AlbumPageState extends State<AlbumPage> {
   Widget _appBar(BuildContext context) {
     return AppBar(
       backgroundColor: Theme.of(context).primaryColor,
-      title: Text("음성앨범", style: TextStyle(fontSize: 11),),
+      title: Text("음성앨범"),
       leading: IconButton(
-        icon: Icon(Icons.arrow_back, size: 12.3,),
+        icon: Icon(Icons.arrow_back),
         onPressed: () => {Navigator.pop(context)},
         iconSize: 28.0,
         color: Colors.white,
@@ -64,20 +67,13 @@ class _AlbumPageState extends State<AlbumPage> {
     );
   }
 
-  List<Voice> voiceList = [];
-  List<Widget> _getVoiceList() {
-    List<Widget> voices = new List<Widget>();
-    _findVoiceList().then((List<Voice> result){
-      setState(() {
-        voiceList = result;
-      });
-    });
-    if (voiceList.isNotEmpty) {
-      for (int i = 0; i < voiceList.length; i++) {
-        voices.add(_voiceList(voiceList[i]));
+  ListView _voiceListView() {
+    return ListView.builder(
+      itemCount: this.voiceList.length,
+      itemBuilder: (BuildContext context, int index) {
+        return this._voiceListItem(this.voiceList[index]);
       }
-    }
-    return voices;
+    );
   }
 
   Future<List<Voice>>_findVoiceList() async{
@@ -102,27 +98,23 @@ class _AlbumPageState extends State<AlbumPage> {
     }
   }
 
-  Widget _voiceList(Voice voice) {
+  Widget _voiceListItem(Voice voice) {
     return ListTile(
       contentPadding: EdgeInsets.symmetric(horizontal: 30.0),
       title: Text(voice.name, style: TextStyle(
         color: Colors.black,
-        fontSize: 11,
         fontWeight: FontWeight.bold,
       )),
       subtitle: Row(
           children: [
-            Text(formatter.format(
-                voice.timestamp.subtract(new Duration(hours: -9))),
+            Text(voice.timestampToString(),
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 8,
                   fontWeight: FontWeight.normal,
                 )),
-            SizedBox(width: 270,),
-            Text(voice.size.toString() + 'MB', style: TextStyle(
+            SizedBox(width: 200,),
+            Text(voice.sizeToString(), style: TextStyle(
                 color: Colors.black,
-                fontSize: 8,
                 fontWeight: FontWeight.normal,
               )),
           ]

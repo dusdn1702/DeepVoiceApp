@@ -138,7 +138,8 @@ class _CustomAudioPlayerState extends State<CustomAudioPlayer> {
       FlatButton(
         onPressed: () async{
           if (!playing) {
-            cache.play('$voiceID.mp3');
+            print(this.widget._voice.data.length);
+            this.cache.playBytes(this.widget._voice.data);
             setState(() {
               playing = true;
             });

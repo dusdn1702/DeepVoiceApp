@@ -1,9 +1,3 @@
-import 'package:deepvoice/api/client.dart';
-import 'package:deepvoice/api/exception.dart';
-import 'package:deepvoice/api/response.dart';
-import 'package:deepvoice/model/user.dart';
-import 'package:deepvoice/model/voice.dart';
-import 'package:deepvoice/view/widget/alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -39,7 +33,6 @@ class _SearchState extends State<Search> {
                       child: TextField(
                         focusNode: focusNode,
                         style: TextStyle(
-                          fontSize: 11,
                         ),
                         autofocus: true,
                         controller: _searchingText,

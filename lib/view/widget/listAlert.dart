@@ -2,27 +2,33 @@ import 'package:deepvoice/api/client.dart';
 import 'package:deepvoice/api/exception.dart';
 import 'package:deepvoice/api/response.dart';
 import 'package:deepvoice/model/voice.dart';
-import 'package:deepvoice/view/page/album.dart';
 import 'package:deepvoice/view/widget/alert.dart';
 import 'package:deepvoice/view/widget/audioPlayer.dart';
 import 'package:deepvoice/view/widget/textAlert.dart';
-import 'package:deepvoice/view/widget/textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import 'package:deepvoice/view/widget/button.dart';
-
 class CustomListAlert extends StatefulWidget {
   final TextEditingController _voiceTitleController;
-  final Voice _voice;
+  Voice voice;
 
-  CustomListAlert(this._voiceTitleController, this._voice);
+  CustomListAlert(this._voiceTitleController, this.voice);
 
   @override
   _CustomListAlertState createState() => _CustomListAlertState();
 }
 
 class _CustomListAlertState extends State<CustomListAlert> {
+
+  @override
+  void initState() {
+    _findVoice(context, this.widget.voice.id).then((Voice result) {
+      setState(() {
+        this.widget.voice = result;
+      });
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -44,16 +50,16 @@ class _CustomListAlertState extends State<CustomListAlert> {
           child: Column(
             children: [
               _oneOfList(context, () {
-                audioPlayer(context, _getVoice(this.widget._voice.id)); //voiceID
+                audioPlayer(context, this.widget.voice); //voiceID
               }, "재생하기"),
               Container(
                   color: Colors.black,
                   height: 0.3
               ),
               _oneOfList(context, () {
-                textAlert(context, "파일이름변경", this.widget._voice.name, "변경하기",
+                textAlert(context, "파일이름변경", this.widget.voice.name, "변경하기",
                     this.widget._voiceTitleController, onTap: () async {
-                      bool ok = await _updateVoiceTitle(context, this.widget._voice.id, this.widget._voiceTitleController.text);  //voiceID
+                      bool ok = await _updateVoiceTitle(context, this.widget.voice.id, this.widget._voiceTitleController.text);  //voiceID
                       if (ok) {
                         FocusScope.of(context).unfocus();
                         alert(context, "파일 이름 변경에 성공했습니다.", "확인", onTap: () {
@@ -96,16 +102,6 @@ class _CustomListAlertState extends State<CustomListAlert> {
             style: TextStyle(fontSize: 11)),
       ),
     );
-  }
-
-  Voice voice;
-  Voice _getVoice(int voiceID) {
-    _findVoice(context, voiceID).then((Voice result) {
-      setState(() {
-        voice = result;
-      });
-    });
-    return voice;
   }
 
   Future<Voice> _findVoice(BuildContext context, int voiceID) async {

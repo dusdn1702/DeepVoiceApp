@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:intl/intl.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'voice.g.dart';
@@ -22,8 +23,18 @@ class Voice {
       dto.text,
       dto.size,
       dto.data != null ? base64Decode(dto.data) : null,
-      DateTime.fromMillisecondsSinceEpoch(dto.timestamp * 1000),
+      DateTime.fromMillisecondsSinceEpoch(dto.timestamp * 1000).toLocal(),
     );
+  }
+
+  String timestampToString() {
+    final DateFormat formatter = DateFormat('yyyy-MM-dd hh:mm');
+    return formatter.format(this.timestamp);
+  }
+
+  String sizeToString() {
+    final NumberFormat f = NumberFormat("###,###");
+    return f.format(this.size / 1000) + "KB";
   }
 }
 
