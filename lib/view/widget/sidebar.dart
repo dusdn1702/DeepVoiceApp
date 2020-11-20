@@ -1,11 +1,10 @@
 import 'package:deepvoice/api/client.dart';
 import 'package:deepvoice/api/exception.dart';
 import 'package:deepvoice/api/response.dart';
-import 'package:deepvoice/model/bot.dart';
 import 'package:deepvoice/model/user.dart';
-import 'package:deepvoice/preference.dart';
 import 'package:deepvoice/view/page/album.dart';
 import 'package:deepvoice/view/page/friendList.dart';
+import 'package:deepvoice/view/page/sharedList.dart';
 import 'package:deepvoice/view/widget/alert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +42,6 @@ class SideBar extends StatelessWidget {
         child: IconButton(
           icon: Icon(Icons.close),
           onPressed: () => {Navigator.pop(context)},
-          iconSize: 12.0,
           color: Colors.black,
         ),
       ),
@@ -77,7 +75,7 @@ class SideBar extends StatelessWidget {
   Widget _userName() {
     return Text(
         this.user.nick,
-        style: TextStyle(color: Color(0xff333333)),
+        style: TextStyle(color: Color(0xff333333), fontWeight: FontWeight.bold),
         textAlign: TextAlign.center);
   }
 
@@ -138,11 +136,11 @@ class SideBar extends StatelessWidget {
           },
           ),
           _button(context, 'assets/sidemenu_share.png', '공유관리', () async{
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => null),);
+            Navigator.of(context).push(MaterialPageRoute(builder: (context) => SharedListPage()),);
           },
           ),
           _button(context, 'assets/sidemenu_push.png', '푸시관리', () async{
-            Navigator.of(context).push(MaterialPageRoute(builder: (context) => null),);
+              alert(context, "서비스 준비 중입니다.", "닫기");
           },
           ),
         ],
@@ -179,7 +177,7 @@ class SideBar extends StatelessWidget {
       bool ok = await _logout(context);
       if (ok) {
         FocusScope.of(context).unfocus();
-        alert(context, "로그인에 성공했습니다.", "확인", onTap: () {
+        alert(context, "로그아웃 완료", "확인", onTap: () {
           Navigator.of(context).popUntil((route) => route.isFirst);
         });
       }

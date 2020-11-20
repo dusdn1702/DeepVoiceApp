@@ -39,7 +39,10 @@ class _AlbumPageState extends State<AlbumPage> {
           child: Column(
             children: [
               SizedBox(height: 13.0),
-              Search(),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: Search(),
+              ),
               SizedBox(height: 10.0),
               Expanded(child: _voiceListView()),
             ],
@@ -99,30 +102,39 @@ class _AlbumPageState extends State<AlbumPage> {
   }
 
   Widget _voiceListItem(Voice voice) {
-    return ListTile(
-      contentPadding: EdgeInsets.symmetric(horizontal: 30.0),
-      title: Text(voice.name, style: TextStyle(
-        color: Colors.black,
-        fontWeight: FontWeight.bold,
-      )),
-      subtitle: Row(
-          children: [
-            Text(voice.timestampToString(),
-                style: TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal,
-                )),
-            SizedBox(width: 200,),
-            Text(voice.sizeToString(), style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.normal,
-              )),
-          ]
-      ),
-      onTap: () {
-        listAlert(context, _voiceTitleController, voice);
-      },
-    );
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        children: [
+          ListTile(
+            title: Text(voice.name, style: TextStyle(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            )),
+            subtitle: Row(
+                children: [
+                  Text(voice.timestampToString(),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal,
+                      )),
+                  SizedBox(width: 200,),
+                  Text(voice.sizeToString(), style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.normal,
+                  )),
+                ]
+            ),
+            onTap: () {
+              listAlert(context, _voiceTitleController, voice);
+            },
+          ),
+          Container(
+            height: 1,
+            width: double.infinity,
+            color: Color(0xffcccccc),
+          ),
+        ],),);
   }
 
   Widget _addVoiceButton(BuildContext context){
@@ -131,6 +143,7 @@ class _AlbumPageState extends State<AlbumPage> {
       onPressed: () => {
         textAlert(context, "음성추가", "추가하고자 하는 텍스트를 입력하세요.", "추가하기", this._voiceInputController, onTap: (){
           _onTapAddVoice(this._voiceInputController.text);
+          initState();
         })
       },
     );

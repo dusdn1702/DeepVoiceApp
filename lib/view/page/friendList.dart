@@ -4,6 +4,7 @@ import 'package:deepvoice/view/widget/appbar.dart';
 import 'package:deepvoice/view/widget/button.dart';
 import 'package:deepvoice/view/widget/search.dart';
 import 'package:deepvoice/view/widget/textAlert.dart';
+import 'package:deepvoice/view/widget/twoButtonAlert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -14,23 +15,35 @@ class FriendListPage extends StatefulWidget {
 class _FriendListState extends State<FriendListPage> {
   String nowButton = "친구목록";
   TextEditingController _friendIdController = TextEditingController();
+  List<User> friendList = [];
 
+  @override
+  void initState() {
+    // _findFriendList().then((List<User> result){
+    //   setState(() {
+    //     this.friendList = result;
+    //   });
+    // });
+    // super.initState();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _appBar(context),
       body: GestureDetector(
         child: SafeArea(
-          child: ListView(
-            padding: EdgeInsets.symmetric(horizontal: 0),
+          child: Column(
             children: [
               _choosingBar(context),
               SizedBox(height: 13.0),
-              Search(),
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: Search(),
+              ),
               SizedBox(height: 10.0),
-              _selectList(context, nowButton),
+              Expanded(child: _selectList(context, nowButton)),
             ],
-          ),
+          )
         ),
         onTap: () {
           FocusScope.of(context).unfocus();
@@ -43,14 +56,15 @@ class _FriendListState extends State<FriendListPage> {
   Widget _appBar(BuildContext context) {
     return AppBar(
       backgroundColor: Theme.of(context).primaryColor,
-      title: Text("친구관리", style: TextStyle(fontSize: 11),),
+      title: Text("친구관리"),
       leading: IconButton(
-        icon: Icon(Icons.arrow_back, size: 12.3,),
+        icon: Icon(Icons.arrow_back),
         onPressed: () => {Navigator.pop(context)},
         iconSize: 28.0,
         color: Colors.white,
       ),
       centerTitle: true,
+      elevation: 0,
     );
   }
 
@@ -90,38 +104,6 @@ class _FriendListState extends State<FriendListPage> {
     }
   }
 
-  Widget _friendList(BuildContext context) {
-    return Container(
-        padding: EdgeInsets.symmetric(horizontal: 24.0),
-        width: MediaQuery.of(context).size.width,
-        child: ListTile(
-          leading: Container(
-            height: 33,
-            width: 33,
-            child: AvatarType.from("BEAR").toCircleImage(),
-          ),
-          title: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Container(
-                    child: Text("Friend.name", style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ))
-                ),
-                Container(
-                  alignment: Alignment.centerRight,
-                  height: 12,
-                  child: Image.asset("assets/friend_delete.png"),),
-              ]
-          ),
-      onTap: () {
-
-      },
-    ));
-  }
-
   Widget _selectOneColumn(String oneBox){
     return Column(
       children: [
@@ -129,7 +111,7 @@ class _FriendListState extends State<FriendListPage> {
           height: 38.5,
           child: FlatButton(
             child: Text(oneBox,
-              style: TextStyle(color: Colors.white, fontSize: 9.5),
+              style: TextStyle(color: Colors.white),
             ),
             onPressed: () {
               setState(() {
@@ -146,137 +128,136 @@ class _FriendListState extends State<FriendListPage> {
           )
       ],);
   }
+
+  Widget _friendList(BuildContext context) {
+    return Container(
+        padding: EdgeInsets.symmetric(horizontal: 30.0),
+        width: double.infinity,
+        child: Row(
+          children: [
+            Container(
+              height: 33,
+              width: 33,
+              child: AvatarType.from("BEAR").toCircleImage(),
+            ),
+            SizedBox(width: 15),
+            Expanded(
+              child: Container(
+                  child: Text("Friend.name", style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ))
+              ),
+            ),
+            InkWell(
+              highlightColor: Colors.transparent,
+              splashColor: Colors.transparent,
+              child: Container(
+                width: 20,
+                height: 25,
+                child: Image.asset("assets/friend_delete.png"),
+              ),
+              onTap: () {
+                print("aaaaa");
+                twoButtonAlert(context, "친구를 삭제하시겠습니까?");
+              },
+            ),
+          ],
+        ));
+  }
+
   Widget _receiveFriendList() {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 24.0),
+      padding: EdgeInsets.symmetric(horizontal: 30.0),
       width: MediaQuery
           .of(context)
           .size
           .width,
-      child: ListTile(
-        leading: Container(
-          height: 33,
-          width: 33,
-          child: AvatarType.from("DOG").toCircleImage(),
-        ),
-        title: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                  width: 140,
-                  child: Text("Friend.name", style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 10,
-                    fontWeight: FontWeight.bold,
-                  ))
-              ),
-              SizedBox(width: 110),
-              InkWell(
-                child: Container(
-                width: 11.5,
-                height: 13.3,
-                child: Image.asset("assets/friend_accept.png"),
-                ),
-                onTap: () => {},
-              ),
-              SizedBox(width: 17,),
-              InkWell(
-                child: Container(
-                  width: 11.5,
-                  height: 13.3,
-                  child: Image.asset("assets/friend_refuse.png"),
-                ),
-                onTap: () => {},
-              ),
-            ]),),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            height: 33,
+            width: 33,
+            child: AvatarType.from("DOG").toCircleImage(),
+          ),
+          SizedBox(width: 10,),
+          Expanded(
+            child: Container(
+                width: 140,
+                child: Text("Friend.name", style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ))
+            ),
+          ),
+          SizedBox(width: 110),
+          Container(
+            child: Row(
+                children: [
+                  InkWell(
+                    highlightColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    child: Container(
+                      width: 20,
+                      height: 25,
+                      child: Image.asset("assets/friend_accept.png"),
+                    ),
+                    onTap: () => {},
+                  ),
+                  SizedBox(width: 15,),
+                  InkWell(
+                    highlightColor: Colors.transparent,
+                    splashColor: Colors.transparent,
+                    child: Container(
+                      width: 20,
+                      height: 25,
+                      child: Image.asset("assets/friend_refuse.png"),
+                    ),
+                    onTap: () => {},
+                  ),
+                ]
+            ),
+          ),
+        ]
+      ),
     );
   }
 
   Widget _sendFriendList(BuildContext context) {
     return Container(
-        padding: EdgeInsets.symmetric(horizontal: 24.0),
-    width: MediaQuery
-        .of(context)
-        .size
-        .width,
-    child: ListTile(
-      leading: Container(
-        height: 33,
-        width: 33,
-        child: AvatarType.from("PANDA").toCircleImage(),
-      ),
-      title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        padding: EdgeInsets.symmetric(horizontal: 30.0),
+        width: double.infinity,
+        child: Row(
           children: [
             Container(
-                width: 160,
-                child: Text("Friend.name", style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 10,
-                  fontWeight: FontWeight.bold,
-                ))
+              height: 33,
+              width: 33,
+              child: AvatarType.from("PANDA").toCircleImage(),
             ),
-            SizedBox(width: 17,),
-            InkWell(
+            SizedBox(width: 15),
+            Expanded(
               child: Container(
-                width: 11.5,
-                height: 13.3,
+                  child: Text("Friend.name", style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ))
+              ),
+            ),
+            InkWell(
+              highlightColor: Colors.transparent,
+              splashColor: Colors.transparent,
+              child: Container(
+                width: 20,
+                height: 25,
                 child: Image.asset("assets/friend_refuse.png"),
               ),
-              onTap: () => {
-                _twoButtonAlert("친구 요청을 취소하시겠습니까?", context)
+              onTap: () {
+                twoButtonAlert(context, "친구요청을 취소하시겠습니까?");
               },
             ),
-          ]
-      ),),
-    );
-  }
-
-  Widget _twoButtonAlert(String alertTitle, BuildContext context) {
-    return Dialog(
-      backgroundColor: Colors.transparent,
-      child: FittedBox(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 20.0),
-            width: MediaQuery
-                .of(context)
-                .size
-                .width - (28.0 * 2.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: const BorderRadius.all(
-                const Radius.circular(7.5),
-              ),
-            ),
-            child: Column(
-              children: [
-                Text(alertTitle, textAlign: TextAlign.center),
-                SizedBox(height: 21.5),
-                Row(
-                    children: [
-                      Container(
-                        width: double.infinity,
-                        child: CustomButton(
-                            "확인", CustomButtonType.Positive, () {
-                          Navigator.of(context).pop();
-                          //여기서 친구 요청 취소 함수
-                        }),
-                      ),
-                      SizedBox(width: 29.5),
-                      Container(
-                        width: double.infinity,
-                        child: CustomButton(
-                            "닫기", CustomButtonType.Negative, () {
-                          Navigator.of(context).pop();
-                        }),
-                      ),
-                    ]),
-                SizedBox(height: 16),
-              ],
-            ),
-          )
-      ),
-    );
+          ],
+        ));
   }
 
   Widget _addFriendButton(BuildContext context){
@@ -288,4 +269,5 @@ class _FriendListState extends State<FriendListPage> {
     );
   }
 }
+
 

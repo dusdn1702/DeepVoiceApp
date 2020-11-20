@@ -23,12 +23,12 @@ class Voice {
       dto.text,
       dto.size,
       dto.data != null ? base64Decode(dto.data) : null,
-      DateTime.fromMillisecondsSinceEpoch(dto.timestamp * 1000).toLocal(),
+      DateTime.fromMillisecondsSinceEpoch(dto.timestamp * 1000),
     );
   }
 
   String timestampToString() {
-    final DateFormat formatter = DateFormat('yyyy-MM-dd hh:mm');
+    final DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm');
     return formatter.format(this.timestamp);
   }
 
