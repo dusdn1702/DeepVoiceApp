@@ -5,11 +5,9 @@ import 'package:deepvoice/model/user.dart';
 import 'package:deepvoice/view/widget/alert.dart';
 import 'package:deepvoice/view/widget/sidebar.dart';
 import 'package:flutter/material.dart';
-import 'package:deepvoice/view/widget/profileImage.dart';
+import 'package:deepvoice/view/widget/mainProfileImage.dart';
 
 class MainPage extends StatefulWidget {
-
-
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -100,13 +98,13 @@ class _MainPageState extends State<MainPage> {
             ],
           ),
           SizedBox(height: 12.0),
-          Text("QWERTY",
+          Text(_currentUser.nick,
               style: TextStyle(color: Color(0xff333333), fontSize: 24)),
           SizedBox(height: 18),
           Row(
             children: [
               SizedBox(width: 27.5),
-              Expanded(child: this._currentUser == null ? Container() : ProfileImage(this._currentUser)),
+              Expanded(child: this._currentUser == null ? Container() : MainProfileImage(this._currentUser)),
               SizedBox(width: 27.5)
             ],
           ),

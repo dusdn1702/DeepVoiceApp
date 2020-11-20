@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deepvoice/model/user.dart';
 import 'package:deepvoice/preference.dart';
+import 'package:deepvoice/view/widget/textfield.dart';
+import 'package:deepvoice/view/widget/textAlert.dart';
 
 class ProfileImage extends StatelessWidget {
   final User user;
@@ -24,7 +26,13 @@ class ProfileImage extends StatelessWidget {
           child: Container(
             width: 80,
             height: 80,
-            child: Image.asset('assets/main_profile.png'),
+              child: InkWell(
+                child: Image.asset('assets/main_profile.png'),
+                onTap: () {
+
+                },
+              )
+
           ),
           right: -5,
           bottom: -5,

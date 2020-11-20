@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:deepvoice/view/widget/textAlert.dart';
 import 'package:deepvoice/view/page/updatePassword.dart';
 import 'package:deepvoice/view/widget/profileImage.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ class MyPage extends StatefulWidget {
 
 class _MyPageState extends State<MyPage> {
   User _currentUser;
+  TextEditingController _myNickController = TextEditingController();
 
   @override
   void initState() async {
@@ -79,7 +81,6 @@ class _MyPageState extends State<MyPage> {
     });
   }
 
-  User currentUser;
 
   Widget _appBar(BuildContext context) {
     return AppBar(
@@ -104,10 +105,14 @@ class _MyPageState extends State<MyPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text("QWERTY" ,style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
+              Text("_currentUser.id", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),),
               InkWell(
                 child: Image.asset('assets/mypage_edit.png', width: 30, height: 30,),
-                onTap: () {},
+                onTap: () {
+                  textAlert(context, "닉네임변경", "닉네임을 입력해주세요", "저장하기", this._myNickController, onTap: () {
+                    _updateUserNick();
+                  });
+                },
               )
             ],
           ),
@@ -138,15 +143,61 @@ class _MyPageState extends State<MyPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("QWERTY", style: TextStyle(fontSize: 20)),
+          Text("_currentUser.id", style: TextStyle(fontSize: 20)),
           SizedBox(height: 30,),
-          Text("남자", style: TextStyle(fontSize: 20)),
+          Text("_currentUser.gender", style: TextStyle(fontSize: 20)),
           SizedBox(height: 30,),
-          Text("1994년 08월 27일", style: TextStyle(fontSize: 20)),
+          Text("_currentUser.birth", style: TextStyle(fontSize: 20)),
         ],
       ),
     );
   }
+
+  Widget _nickBtn() {
+    return InkWell(
+      child: Image.asset('assets/mypage_edit.png', height: 30),
+      onTap: () {},
+    );
+  }
+
+
+
+  Future<void> _updateUserNick() async {
+    if (this._myNickController.text.isEmpty) {
+      alert(context, "닉네임을 다시 입력해주세요.", "확인");
+      return;
+    }
+
+    bool ok = await _newNick(this._myNickController.text);
+    if (ok) {
+      FocusScope.of(context).unfocus();
+      alert(context, "닉네임이 변경되었습니다.", "확인", onTap: () {
+        Navigator.of(context).pop();
+      });
+    }
+  }
+
+  Future<bool> _newNick(String newNick) async {
+    try {
+      APIClient client = APIClient();
+      await client.updateUserNick(newNick);
+      return true;
+    } catch (e) {
+      if (e is APIException) {
+        if (e.errorCode == APIStatus.InvalidParameter) {
+          alert(context, "올바른 정보를 입력해주세요.", "확인");
+          return false;
+        } else if (e.errorCode == APIStatus.Duplicated) {
+          alert(context, "중복된 사용자 정보가 존재합니다.", "확인");
+          return false;
+        }
+      }
+      alert(context, "알 수 없는 에러가 발생했습니다.", "확인");
+      return false;
+    }
+  }
+
+
 
   Function _onTapPassword(BuildContext context) {
     return () async {
