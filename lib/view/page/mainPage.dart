@@ -145,9 +145,14 @@ class _MainPageState extends State<MainPage> {
         ),
         color: Colors.white,
         onPressed: () {
-          textAlert(context, "음성추가", "추가하고자 하는 텍스트를 입력하세요.", "추가하기", this._voiceInputController, onTap: () {
-            this._addVoice(this._voiceInputController.text);
+          textAlert(context, "음성변환", "변환하고자 하는 텍스트를 입력해주세요.", "변환하기", this._voiceInputController, onTap: () {
+            String v = this._voiceInputController.text;
+            if (v.isEmpty) {
+              alert(context, "변환할 텍스트를 입력해주세요.", "확인");
+              return;
+            }
             this._voiceInputController.clear();
+            this._addVoice(v);
           });
         },
       ),
@@ -182,7 +187,7 @@ class _MainPageState extends State<MainPage> {
         ),
         color: Colors.white,
         onPressed: () {
-          alert(context, "준비중입니다.", "확인");
+          alert(context, "서비스 준비 중입니다.", "닫기");
         },
       ),
     );
@@ -216,7 +221,7 @@ class _MainPageState extends State<MainPage> {
         ),
         color: Colors.white,
         onPressed: () {
-          alert(context, "준비중입니다.", "확인");
+          alert(context, "서비스 준비 중입니다.", "닫기");
         },
       ),
     );
@@ -253,7 +258,7 @@ class _MainPageState extends State<MainPage> {
           ],
         ),
         onPressed: () {
-          alert(context, "준비중입니다.", "확인");
+          alert(context, "서비스 준비 중입니다.", "닫기");
         },
       ),
     );

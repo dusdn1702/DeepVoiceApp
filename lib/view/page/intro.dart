@@ -14,7 +14,7 @@ class IntroPage extends StatelessWidget {
       () async {
         Preference p =  await loadPreference();
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => p.isLogin() ? MainPage() : LoginPage()),
+          MaterialPageRoute(builder: (context) => (p != null && p.isLogin()) ? MainPage() : LoginPage()),
         );
       }
     );

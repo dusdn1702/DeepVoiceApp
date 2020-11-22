@@ -1,3 +1,4 @@
+import 'package:deepvoice/view/widget/no_data.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -44,7 +45,7 @@ class _AlbumPageState extends State<AlbumPage> {
                 }),
               ),
               SizedBox(height: 10.0),
-              Expanded(child: _voiceListView()),
+              Expanded(child: this.voiceList.length == 0 ? NoData() : _voiceListView()),
             ],
           ),
         ),

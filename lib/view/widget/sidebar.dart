@@ -7,6 +7,7 @@ import 'package:deepvoice/view/page/friendList.dart';
 import 'package:deepvoice/view/page/login.dart';
 import 'package:deepvoice/view/page/sharedList.dart';
 import 'package:deepvoice/view/widget/alert.dart';
+import 'package:deepvoice/view/widget/confirm.dart';
 import 'package:deepvoice/view/widget/settingAvatarAlert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -175,14 +176,16 @@ class SideBar extends StatelessWidget {
   }
 
   Function _onTapLogout(BuildContext context){
-    return () async{
-      bool ok = await _logout(context);
-      if (ok) {
-        FocusScope.of(context).unfocus();
-        alert(context, "로그아웃 되었습니다.", "확인", onTap: () {
-          Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
-        });
-      }
+    return () {
+      confirm(context, "로그아웃 하시겠습니까?", "확인", "닫기", () async{
+        bool ok = await _logout(context);
+        if (ok) {
+          FocusScope.of(context).unfocus();
+          alert(context, "로그아웃 되었습니다.", "확인", onTap: () {
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
+          });
+        }
+      });
     };
   }
 

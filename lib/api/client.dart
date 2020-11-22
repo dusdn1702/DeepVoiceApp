@@ -150,6 +150,14 @@ class APIClient {
     });
   }
 
+  Future<void> deleteVoice(int voiceID) async {
+    String id =  await _getSessionID();
+    await _call("api/v1/voice/delete", {
+      "session_id": id,
+      "voice_id": voiceID,
+    });
+  }
+
   Future<List<User>> getFriendList(ProgressStatus status, {String loginID}) async {
     String id =  await _getSessionID();
     List<dynamic> res = await _call("api/v1/friend/list", {

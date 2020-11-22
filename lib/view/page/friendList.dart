@@ -1,15 +1,12 @@
 import 'package:deepvoice/api/client.dart';
 import 'package:deepvoice/api/exception.dart';
 import 'package:deepvoice/api/response.dart';
-import 'package:deepvoice/model/bot.dart';
 import 'package:deepvoice/model/progress.dart';
 import 'package:deepvoice/model/user.dart';
 import 'package:deepvoice/view/widget/alert.dart';
-import 'package:deepvoice/view/widget/appbar.dart';
-import 'package:deepvoice/view/widget/button.dart';
-import 'package:deepvoice/view/widget/search.dart';
+import 'package:deepvoice/view/widget/confirm.dart';
+import 'package:deepvoice/view/widget/no_data.dart';
 import 'package:deepvoice/view/widget/textAlert.dart';
-import 'package:deepvoice/view/widget/twoButtonAlert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -49,7 +46,7 @@ class _FriendListState extends State<FriendListPage> {
                   // child: Search(),
                 ),
                 SizedBox(height: 10.0),
-                Expanded(child: _selectList(context, nowButton)),
+                Expanded(child: this.friendList.length == 0 ? NoData() : _selectList(context, nowButton)),
               ],
             )
         ),
@@ -183,7 +180,6 @@ class _FriendListState extends State<FriendListPage> {
                   this.friendList = result;
                 });
               });
-              _selectList(context, oneBox);
             },
           ),),
         if(this.nowButton == oneBox)
@@ -238,8 +234,12 @@ class _FriendListState extends State<FriendListPage> {
                               child: Image.asset("assets/friend_delete.png"),
                             ),
                             onTap: () {
-                              twoButtonAlert(context, "친구를 삭제하시겠습니까?", onTap: () {
-                                _deleteFriend(friend.id);
+                              confirm(context, "친구를 삭제하시겠습니까?", "확인", "닫기", () async {
+                                bool ok = await _onTapDeleteFriend(friend.id);
+                                if (ok) {
+                                  alert(context, "친구가 삭제되었습니다.", "확인");
+                                  _onRefresh();
+                                }
                               });
                             },
                           ),
@@ -300,7 +300,13 @@ class _FriendListState extends State<FriendListPage> {
                             child: Image.asset("assets/friend_accept.png"),
                           ),
                           onTap: () {
-                            _acceptFriend(friend.id);
+                            confirm(context, "친구 요청을 수락하시겠습니까?", "확인", "닫기", () async {
+                              bool ok = await _onTapAcceptFriend(friend.id);
+                              if (ok) {
+                                alert(context, "친구 요청이 수락되었습니다.", "확인");
+                                _onRefresh();
+                              }
+                            });
                           },
                         ),
                         SizedBox(width: 15,),
@@ -313,7 +319,13 @@ class _FriendListState extends State<FriendListPage> {
                             child: Image.asset("assets/friend_refuse.png"),
                           ),
                           onTap: () {
-                            _deleteFriend(friend.id);
+                            confirm(context, "친구 요청을 거절하시겠습니까?", "확인", "닫기", () async {
+                              bool ok = await _onTapDeleteFriend(friend.id);
+                              if (ok) {
+                                alert(context, "친구 요청이 거절되었습니다.", "확인");
+                                _onRefresh();
+                              }
+                            });
                           },
                         ),
                       ]
@@ -373,8 +385,13 @@ class _FriendListState extends State<FriendListPage> {
                               child: Image.asset("assets/friend_refuse.png"),
                             ),
                             onTap: () {
-                              twoButtonAlert(
-                                  context, "친구요청을 취소하시겠습니까?", onTap: _deleteFriend(friend.id));
+                              confirm(context, "친구 요청을 취소하시겠습니까?", "확인", "닫기", () async {
+                                bool ok = await _onTapDeleteFriend(friend.id);
+                                if (ok) {
+                                  alert(context, "친구 요청이 취소되었습니다.", "확인");
+                                  _onRefresh();
+                                }
+                              });
                             },
                           ),
                         ]
@@ -395,22 +412,28 @@ class _FriendListState extends State<FriendListPage> {
     return FloatingActionButton(
       child: Image.asset("assets/friend_add.png"),
       onPressed: () {
-        textAlert(context, "친구추가", "친구의 아이디를 입력하세요", "추가하기",
-            this._friendIdController, onTap: () async {
-              bool ok = await _onTapAddFriend(this._friendIdController.text);
-              //voiceID
-              if (ok) {
-                FocusScope.of(context).unfocus();
-                alert(context, "친구 추가가 완료되었습니다.", "확인", onTap: () {
-                  //Navigator.of(context).pop();
-                });
-              } else {
-                alert(context, "친구 추가 실패", "닫기");
-              }
-              initState();
-            });
+        textAlert(context, "친구요청", "친구 요청할 아이디를 입력해주세요.", "추가하기",
+          this._friendIdController, onTap: () async {
+            String v = this._friendIdController.text;
+            this._friendIdController.clear();
+            bool ok = await _onTapAddFriend(v);
+            if (ok) {
+              FocusScope.of(context).unfocus();
+              alert(context, "친구 요청이 완료되었습니다.", "확인");
+              this.nowButton = ProgressStatus.WAITING;
+              _onRefresh();
+            }
+          });
       },
     );
+  }
+
+  Future<void> _onRefresh() async {
+    _findFriendList(this.nowButton).then((List<User> result) {
+      setState(() {
+        this.friendList = result;
+      });
+    });
   }
 
   Future<bool> _onTapAddFriend(String friendID) async {
@@ -428,25 +451,18 @@ class _FriendListState extends State<FriendListPage> {
             Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
           });
           return false;
+        } else if (e.errorCode == APIStatus.NotFound) {
+          alert(context, "존재하지 않는 아이디입니다.", "확인");
+          return false;
+        } else if (e.errorCode == APIStatus.Duplicated) {
+          alert(context, "이미 등록된 정보입니다.", "확인");
+          return false;
         }
       }
       alert(context, "알 수 없는 에러가 발생했습니다.", "확인");
       print(e);
       return false;
     }
-  }
-
-  _acceptFriend(int friendID) async {
-    bool ok = await _onTapAcceptFriend(friendID);
-    if (ok) {
-      FocusScope.of(context).unfocus();
-      alert(context, "친구 추가가 완료되었습니다.", "확인", onTap: () {
-        //Navigator.of(context).pop();
-      });
-    } else {
-      alert(context, "친구 추가 실패", "닫기");
-    }
-    initState();
   }
 
   Future<bool> _onTapAcceptFriend(int friendID) async {
@@ -470,20 +486,6 @@ class _FriendListState extends State<FriendListPage> {
       print(e);
       return false;
     }
-  }
-
-  _deleteFriend(int friendID) async {
-    bool ok = await _onTapDeleteFriend(friendID);
-    //voiceID
-    if (ok) {
-      FocusScope.of(context).unfocus();
-      alert(context, "친구 삭제가 완료되었습니다.", "확인", onTap: () {
-        // Navigator.of(context).pop();
-      });
-    } else {
-      alert(context, "친구 삭제 실패", "닫기");
-    }
-    initState();
   }
 
   Future<bool> _onTapDeleteFriend(int friendID) async {
