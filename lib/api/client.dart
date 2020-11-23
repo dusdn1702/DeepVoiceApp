@@ -158,12 +158,12 @@ class APIClient {
     });
   }
 
-  Future<List<User>> getFriendList(ProgressStatus status, {String loginID}) async {
+  Future<List<User>> getFriendList(ProgressStatus status, {String nick}) async {
     String id =  await _getSessionID();
     List<dynamic> res = await _call("api/v1/friend/list", {
       "session_id": id,
       "status": status.get(),
-      "friend_login_id": loginID != null ? loginID : "",
+      "nick": nick != null ? nick : "",
     });
 
     return res.map((dynamic v) {
@@ -194,6 +194,17 @@ class APIClient {
       "session_id": id,
       "friend_user_id": userID,
     });
+  }
+
+  Future<Voice> getShareVoice(int shareID) async {
+    String id =  await _getSessionID();
+    Map<String, dynamic> res = await _call("api/v1/share/voice", {
+      "session_id": id,
+      "share_id": shareID,
+    });
+    VoiceDTO dto = VoiceDTO.fromJson(res);
+
+    return Voice.fromDTO(dto);
   }
 
   Future<List<Share>> getShareList(ProgressStatus status) async {

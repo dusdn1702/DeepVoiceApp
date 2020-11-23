@@ -8,10 +8,10 @@ class CustomTextAlert extends StatelessWidget {
   final String alertTitle;
   final String hiddenText;
   final String btnText;
-  final TextEditingController inputController;
-  final Function onTap;
+  final Function(String) onTap;
+  final TextEditingController inputController = TextEditingController();
 
-  CustomTextAlert(this.alertTitle, this.hiddenText, this.btnText, this.inputController, {this.onTap});
+  CustomTextAlert(this.alertTitle, this.hiddenText, this.btnText, this.onTap);
 
   @override
   Widget build(BuildContext context) {
@@ -48,9 +48,8 @@ class CustomTextAlert extends StatelessWidget {
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
                   child: CustomButton(this.btnText, CustomButtonType.Default, () {
                     Navigator.of(context).pop();
-                    if (this.onTap != null) {
-                      this.onTap();
-                    }
+                    this.onTap(this.inputController.text);
+                    this.inputController.clear();
                   }),
                 ),
                 SizedBox(height: 19.5),
@@ -62,11 +61,11 @@ class CustomTextAlert extends StatelessWidget {
   }
 }
 
-void textAlert(BuildContext context, String alertTitle, String hiddenText, String buttonText, TextEditingController inputController, {Function onTap}) {
+void textAlert(BuildContext context, String alertTitle, String hiddenText, String buttonText, Function onTap) {
   showDialog(
       context: context,
       builder: (BuildContext context) {
-        return CustomTextAlert(alertTitle, hiddenText, buttonText, inputController, onTap: onTap);
+        return CustomTextAlert(alertTitle, hiddenText, buttonText, onTap);
       }
   );
 }

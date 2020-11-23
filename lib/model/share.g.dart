@@ -10,6 +10,7 @@ ShareDTO _$ShareDTOFromJson(Map<String, dynamic> json) {
   return ShareDTO(
     json['id'] as int,
     json['friend_login_id'] as String,
+    json['friend_nick'] as String,
     json['voice'] == null
         ? null
         : VoiceDTO.fromJson(json['voice'] as Map<String, dynamic>),
@@ -20,6 +21,7 @@ ShareDTO _$ShareDTOFromJson(Map<String, dynamic> json) {
 Map<String, dynamic> _$ShareDTOToJson(ShareDTO instance) => <String, dynamic>{
       'id': instance.id,
       'friend_login_id': instance.friendLoginID,
+      'friend_nick': instance.friendNick,
       'voice': instance.voice,
       'timestamp': instance.timestamp,
     };

@@ -18,7 +18,6 @@ class FriendListPage extends StatefulWidget {
 
 class _FriendListState extends State<FriendListPage> {
   String nowButton = ProgressStatus.DONE;
-  TextEditingController _friendIdController = TextEditingController();
   List<User> friendList = [];
 
   @override
@@ -412,18 +411,20 @@ class _FriendListState extends State<FriendListPage> {
     return FloatingActionButton(
       child: Image.asset("assets/friend_add.png"),
       onPressed: () {
-        textAlert(context, "친구요청", "친구 요청할 아이디를 입력해주세요.", "추가하기",
-          this._friendIdController, onTap: () async {
-            String v = this._friendIdController.text;
-            this._friendIdController.clear();
-            bool ok = await _onTapAddFriend(v);
-            if (ok) {
-              FocusScope.of(context).unfocus();
-              alert(context, "친구 요청이 완료되었습니다.", "확인");
-              this.nowButton = ProgressStatus.WAITING;
-              _onRefresh();
-            }
-          });
+        textAlert(context, "친구요청", "친구 요청할 아이디를 입력해주세요.", "추가하기", (String v) async {
+          if (v.isEmpty) {
+            alert(context, "요청할 아이디를 입력해주세요.", "확인");
+            return;
+          }
+
+          bool ok = await _onTapAddFriend(v);
+          if (ok) {
+            FocusScope.of(context).unfocus();
+            alert(context, "친구 요청이 완료되었습니다.", "확인");
+            this.nowButton = ProgressStatus.WAITING;
+            _onRefresh();
+          }
+        });
       },
     );
   }

@@ -16,8 +16,8 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  final _voiceInputController = TextEditingController();
   User _currentUser;
+  bool _progressing = false;
 
   @override
   void initState() {
@@ -32,34 +32,16 @@ class _MainPageState extends State<MainPage> {
       endDrawer: this._currentUser == null ? Container() : SideBar(this._currentUser),
       body: GestureDetector(
         child: SafeArea(
-          child: Container(
-            color: Color(0xfff2f3f8),
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(
-              children: [
-                SizedBox(height: 13.0),
-                Expanded(child: _mainProfile()),
-                SizedBox(height: 22),
-                Row(
-                  children: [
-                    Expanded(child: _btnConvert(context)),
-                    SizedBox(width: 20),
-                    Expanded(child: _btnLearn(context)),
-                    SizedBox(width: 20),
-                    Expanded(child: _btnEmotion(context))
-                  ],
-                ),
-                SizedBox(height: 19),
-                _btnChat(context),
-                SizedBox(height: 19)
-              ],
-            ),
-          ),
+          child: _progressing == false ? _body() : Stack(
+            children: [
+              _body(),
+              _convertProgressView(),
+            ],
+          )
         ),
       ),
     );
   }
-
 
   Widget _appBar() {
     return AppBar(
@@ -74,6 +56,48 @@ class _MainPageState extends State<MainPage> {
         ],
       ),
       automaticallyImplyLeading: false,
+    );
+  }
+
+  Widget _convertProgressView() {
+    return Container(
+      alignment: Alignment.center,
+      color: Color(0xaa000000),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(width: 60, height: 60, child: CircularProgressIndicator(backgroundColor: Theme.of(context).primaryColor, strokeWidth: 6.0)),
+          SizedBox(height: 20.0),
+          Text("음성 변환중 입니다.\n잠시만 기다려주세요.", textAlign: TextAlign.center, style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        ]
+      ),
+    );
+  }
+
+  Widget _body() {
+    return Container(
+      color: Color(0xfff2f3f8),
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      child: Column(
+        children: [
+          SizedBox(height: 13.0),
+          Expanded(child: _mainProfile()),
+          SizedBox(height: 22),
+          Row(
+            children: [
+              Expanded(child: _btnConvert(context)),
+              SizedBox(width: 20),
+              Expanded(child: _btnLearn(context)),
+              SizedBox(width: 20),
+              Expanded(child: _btnEmotion(context))
+            ],
+          ),
+          SizedBox(height: 19),
+          _btnChat(context),
+          SizedBox(height: 19)
+        ],
+      ),
     );
   }
 
@@ -145,14 +169,18 @@ class _MainPageState extends State<MainPage> {
         ),
         color: Colors.white,
         onPressed: () {
-          textAlert(context, "음성변환", "변환하고자 하는 텍스트를 입력해주세요.", "변환하기", this._voiceInputController, onTap: () {
-            String v = this._voiceInputController.text;
+          textAlert(context, "음성변환", "변환하고자 하는 텍스트를 입력해주세요.", "변환하기", (String v) async {
             if (v.isEmpty) {
               alert(context, "변환할 텍스트를 입력해주세요.", "확인");
               return;
             }
-            this._voiceInputController.clear();
-            this._addVoice(v);
+            setState(() {
+              this._progressing = true;
+            });
+            await this._addVoice(v);
+            setState(() {
+              this._progressing = false;
+            });
           });
         },
       ),
@@ -382,17 +410,17 @@ class _MainPageState extends State<MainPage> {
       if (e is APIException) {
         if (e.errorCode == APIStatus.InvalidParameter) {
           alert(context, "올바른 정보를 입력해주세요.", "확인");
-          return null;
+          return;
         } else if (e.errorCode == APIStatus.UnknownSession) {
           alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
             Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
           });
-          return null;
+          return;
         }
       }
       alert(context, "알 수 없는 에러가 발생했습니다.", "확인");
       print(e);
-      return null;
+      return;
     }
   }
 }
