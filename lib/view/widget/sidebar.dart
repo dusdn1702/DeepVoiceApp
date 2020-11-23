@@ -8,15 +8,15 @@ import 'package:deepvoice/view/page/login.dart';
 import 'package:deepvoice/view/page/sharedList.dart';
 import 'package:deepvoice/view/widget/alert.dart';
 import 'package:deepvoice/view/widget/confirm.dart';
-import 'package:deepvoice/view/widget/settingAvatarAlert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:deepvoice/view/page/myPage.dart';
 
 class SideBar extends StatelessWidget {
   final User user;
+  final Function onMainRefresh;
 
-  SideBar(this.user);
+  SideBar(this.user, this.onMainRefresh);
 
   @override
   Widget build(BuildContext context) {
@@ -55,6 +55,7 @@ class SideBar extends StatelessWidget {
     return Container(
         alignment: Alignment.center,
         width: double.infinity,
+        padding: EdgeInsets.symmetric(horizontal: 28.0),
         child: Column(
           children: [
             _userBot(context),
@@ -127,23 +128,27 @@ class SideBar extends StatelessWidget {
       child: Column(
         children: [
           _button(context, 'assets/sidemenu_mypage.png', '마이페이지', ()  async{
-            Navigator.push(context, MaterialPageRoute(builder: (context) => SettingAvatarAlert("아바타 설정", this.user.bot.avatar, "변경하기")),);
+            Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => MyPage(this.onMainRefresh)));
           },
           ),
           _button(context, 'assets/sidemenu_album.png', '음성앨범', () async {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => AlbumPage()),);
+            Navigator.pop(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context) => AlbumPage()));
           },
           ),
           _button(context, 'assets/sidemenu_friend.png', '친구관리', () async{
+            Navigator.pop(context);
             Navigator.push(context, MaterialPageRoute(builder: (context) => FriendListPage()),);
           },
           ),
           _button(context, 'assets/sidemenu_share.png', '공유관리', () async{
+            Navigator.pop(context);
             Navigator.of(context).push(MaterialPageRoute(builder: (context) => SharedListPage()),);
           },
           ),
           _button(context, 'assets/sidemenu_push.png', '푸시관리', () async{
-              alert(context, "서비스 준비 중입니다.", "닫기");
+            alert(context, "서비스 준비 중입니다.", "닫기");
           },
           ),
         ],

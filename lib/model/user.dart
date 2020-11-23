@@ -29,6 +29,11 @@ class User {
       DateTime.fromMillisecondsSinceEpoch(dto.timestamp * 1000),
     );
   }
+
+  String birthToString() {
+    final DateFormat formatter = DateFormat('yyyy-MM-dd');
+    return formatter.format(this.birth);
+  }
 }
 
 @JsonSerializable()

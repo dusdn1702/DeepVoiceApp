@@ -283,7 +283,7 @@ class _SharedListState extends State<SharedListPage> {
           ),
           onTap: () {
             confirm(context, "공유 요청을 거절하시겠습니까?", "확인", "닫기", () async {
-              bool ok = await this._acceptShare(share.id);
+              bool ok = await this._denyShare(share.id);
               if (ok) {
                 alert(context, "공유 요청이 거절되었습니다.", "확인");
                 _onRefresh();

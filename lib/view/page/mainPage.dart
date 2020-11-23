@@ -15,7 +15,7 @@ class MainPage extends StatefulWidget {
   _MainPageState createState() => _MainPageState();
 }
 
-class _MainPageState extends State<MainPage> {
+class _MainPageState extends State<MainPage> with WidgetsBindingObserver {
   User _currentUser;
   bool _progressing = false;
 
@@ -29,7 +29,9 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: _appBar(),
-      endDrawer: this._currentUser == null ? Container() : SideBar(this._currentUser),
+      endDrawer: this._currentUser == null ? Container() : SideBar(this._currentUser, () {
+        this._findUser(context);
+      }),
       body: GestureDetector(
         child: SafeArea(
           child: _progressing == false ? _body() : Stack(

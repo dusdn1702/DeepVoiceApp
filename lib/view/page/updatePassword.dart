@@ -3,10 +3,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:deepvoice/api/client.dart';
 import 'package:deepvoice/api/exception.dart';
 import 'package:deepvoice/api/response.dart';
-import 'package:deepvoice/model/user.dart';
 import 'package:deepvoice/view/widget/alert.dart';
 import 'package:deepvoice/view/widget/textfield.dart';
 import 'package:deepvoice/view/widget/button.dart';
+
+import 'login.dart';
 
 
 class UpdatePassword extends StatefulWidget {
@@ -32,12 +33,12 @@ class _UpdatePasswordState extends State<UpdatePassword> {
             padding: EdgeInsets.symmetric(horizontal: 24.0),
             children: [
               SizedBox(height: 31.0),
-              CustomTextField("현재비밀번호", "현재 비밀번호를 입력해 주세요.", TextInputType.text, true, this._oldPasswordController),
+              CustomTextField("현재 비밀번호", "현재 비밀번호를 입력해 주세요.", TextInputType.text, true, this._oldPasswordController),
               SizedBox(height: 19.0),
-              CustomTextField("새비밀번호", "새비밀번호를 입력해주세요.", TextInputType.text, true, this._newPasswordController),
+              CustomTextField("새 비밀번호", "새 비밀번호를 입력해주세요.", TextInputType.text, true, this._newPasswordController),
               SizedBox(height: 19.0),
               CustomTextField("비밀번호 확인", "비밀번호를 한번 더 입력해주세요.", TextInputType.text, true, this._passwordCheckController),
-              SizedBox(height: 19.0),
+              SizedBox(height: 31.0),
               CustomButton("변경하기", CustomButtonType.Default, _onTapNewPassword),
               SizedBox(height: 25.0),
             ],
@@ -53,7 +54,7 @@ class _UpdatePasswordState extends State<UpdatePassword> {
   Widget _appBar(BuildContext context) {
     return AppBar(
       backgroundColor: Theme.of(context).primaryColor,
-      title: Text("비밀번호변경"),
+      title: Text("비밀번호 변경"),
       leading: IconButton(
         icon: Icon(Icons.arrow_back),
         onPressed: () => {Navigator.pop(context)},
@@ -65,7 +66,6 @@ class _UpdatePasswordState extends State<UpdatePassword> {
   }
 
   Future<void> _onTapNewPassword() async {
-
     if (this._oldPasswordController.text.isEmpty) {
       alert(context, "비밀번호를 입력해주세요.", "확인");
       return;
@@ -98,8 +98,13 @@ class _UpdatePasswordState extends State<UpdatePassword> {
         if (e.errorCode == APIStatus.InvalidParameter) {
           alert(context, "올바른 정보를 입력해주세요.", "확인");
           return false;
-        } else if (e.errorCode == APIStatus.Duplicated) {
-          alert(context, "중복된 사용자 정보가 존재합니다.", "확인");
+        } else if (e.errorCode == APIStatus.UnknownSession) {
+          alert(context, "세션이 만료됐습니다.", "확인", onTap: () {
+            Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (route) => false);
+          });
+          return false;
+        } else if (e.errorCode == APIStatus.IncorrectCredential) {
+          alert(context, "비밀번호가 일치하지 않습니다.", "확인");
           return false;
         }
       }

@@ -44,7 +44,6 @@ class _FriendListState extends State<FriendListPage> {
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
                   // child: Search(),
                 ),
-                SizedBox(height: 10.0),
                 Expanded(child: this.friendList.length == 0 ? NoData() : _selectList(context, nowButton)),
               ],
             )
@@ -199,8 +198,8 @@ class _FriendListState extends State<FriendListPage> {
           .width,
       child: Column(
         children: [
+          SizedBox(height: 10.0),
           Container(
-            height: 65,
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -247,6 +246,7 @@ class _FriendListState extends State<FriendListPage> {
                   ),
                 ]
             ),),
+          SizedBox(height: 10.0),
           Container(
             height: 1,
             width: double.infinity,
@@ -265,8 +265,8 @@ class _FriendListState extends State<FriendListPage> {
           .width,
       child: Column(
         children: [
+          SizedBox(height: 10.0),
           Container(
-            height: 65,
           child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -332,6 +332,7 @@ class _FriendListState extends State<FriendListPage> {
                 ),
               ]
           ),),
+          SizedBox(height: 10.0),
           Container(
             height: 1,
             width: double.infinity,
@@ -350,8 +351,8 @@ class _FriendListState extends State<FriendListPage> {
           .width,
       child: Column(
         children: [
+          SizedBox(height: 10.0),
           Container(
-            height: 65,
             child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -398,6 +399,7 @@ class _FriendListState extends State<FriendListPage> {
                   ),
                 ]
             ),),
+          SizedBox(height: 10.0),
           Container(
             height: 1,
             width: double.infinity,
